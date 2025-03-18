@@ -22,12 +22,13 @@
       <!-- Start Survey Step -->
       <div v-else-if="currentStep === 'start'" class="start-survey-container">
         <h2>
-          Bonjour, pour mieux connaître les usages du pôle gare de Dammartin
-          Juilly Saint-Mard,<br />
-          la communauté d'agglomération<br />
-          Roissy Pays de France souhaiterait en savoir plus sur votre
-          déplacement en cours.<br />
-          Acceptez-vous de répondre à quelques questions ?
+          Bonjour,<br /><br />
+          Nous réalisons une enquête pour le compte d'Île-de-France
+          Mobilités.<br /><br />
+          Pourriez-vous m'accorder quelques instants ?<br /><br />
+          Nous vous invitons à répondre à ce questionnaire même si vous avez
+          déjà été sollicité.<br /><br />
+          Merci.
         </h2>
         <button @click="startSurvey" class="btn-next">
           COMMENCER QUESTIONNAIRE
@@ -347,6 +348,9 @@ const handleCommuneSelection = () => {
     const questionId = currentQuestion.value.id;
     const selectedValue = communeSelections.value[questionId];
 
+    console.log("Commune selection started for question:", questionId);
+    console.log("Selected value:", selectedValue);
+
     if (selectedValue && selectedValue.trim() !== "") {
       const parts = selectedValue.split(" - ");
 
@@ -362,6 +366,19 @@ const handleCommuneSelection = () => {
         answers.value[`${questionId}_CODE_INSEE`] = "";
         answers.value[`${questionId}_COMMUNE_LIBRE`] = selectedValue.trim();
       }
+
+      // Log the stored answers for debugging
+      console.log(`Stored commune selection for ${questionId}:`, {
+        commune: answers.value[`${questionId}_COMMUNE`],
+        codeInsee: answers.value[`${questionId}_CODE_INSEE`],
+        communeLibre: answers.value[`${questionId}_COMMUNE_LIBRE`],
+      });
+
+      // Log the entire answers object to verify structure
+      console.log(
+        "Current answers object:",
+        JSON.stringify(answers.value, null, 2)
+      );
 
       nextQuestion();
       communeSelections.value[questionId] = "";
@@ -412,11 +429,17 @@ const previousQuestion = () => {
     }
   }
 };
-// Update the finishSurvey function
+
+// Update the finishSurvey function with more detailed logging
 const finishSurvey = async () => {
   isSurveyComplete.value = true;
   const now = new Date();
-  logAnswers(); // Log all answers before saving to Firebase
+
+  // Log all answers before saving to Firebase
+  console.log(
+    "All answers before saving:",
+    JSON.stringify(answers.value, null, 2)
+  );
 
   const uniqueId = await getNextId();
 
@@ -440,13 +463,24 @@ const finishSurvey = async () => {
     surveyData[key] = answers.value[key];
   });
 
-  console.log("Survey data to be saved:", surveyData);
+  console.log(
+    "Final survey data to be saved:",
+    JSON.stringify(surveyData, null, 2)
+  );
 
   try {
-    await addDoc(surveyCollectionRef, surveyData);
-    console.log("Survey data saved successfully");
+    const docRef = await addDoc(surveyCollectionRef, surveyData);
+    console.log("Survey data saved successfully with ID:", docRef.id);
+
+    // Verify the saved data
+    const savedDoc = await getDoc(docRef);
+    console.log(
+      "Verified saved data:",
+      JSON.stringify(savedDoc.data(), null, 2)
+    );
   } catch (error) {
     console.error("Error saving survey data:", error);
+    console.error("Error details:", error.message);
   }
 };
 
@@ -566,8 +600,8 @@ h2 {
 }
 
 .btn-next {
-  background-color: #2ea44f;  /* This is your app's green color */
-  width: 400px;  /* Match width with other elements */
+  background-color: #2ea44f; /* This is your app's green color */
+  width: 400px; /* Match width with other elements */
 }
 
 .btn-next:disabled {
@@ -577,8 +611,8 @@ h2 {
 
 .btn-return {
   background-color: grey;
-  width: 400px;  /* Match width with other elements */
-  margin-top: 15px;  /* Adjust spacing */
+  width: 400px; /* Match width with other elements */
+  margin-top: 15px; /* Adjust spacing */
 }
 
 .btn-option {

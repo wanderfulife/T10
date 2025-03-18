@@ -3,219 +3,301 @@
 
 export const questions = [
 	{
-		id: "Q1",
-		text: "De quelle commune venez vous ?",
+		id: "Q1_montee",
+		text: "Station de montée",
 		options: [
-			{ id: 1, text: "Saint-Mard", next: "Q2" },
-			{ id: 2, text: "Juilly", next: "Q2" },
-			{ id: 3, text: "-en-Goële", next: "Q2" },
-			{ id: 4, text: "Longperrier", next: "Q2" },
-			{ id: 5, text: "Rouvres", next: "Q2" },
-			{ id: 6, text: "Othis", next: "Q2" },
-			{ id: 7, text: "Saint Pathus", next: "Q2" },
-			{ id: 8, text: "Villeneuve-sous-", next: "Q2" },
-			{ id: 9, text: "Lagny-le-Sec", next: "Q2" },
-			{ id: 10, text: "Le Plessis-Belleville", next: "Q2" },
-			{ id: 11, text: "Autre: Précisez la ville", next: "Q1P" }
+			{ id: 1, text: "Jardin Parisien", next: "Q1_descente" },
+			{ id: 2, text: "Hôpital Béclère", next: "Q1_descente" },
+			{ id: 3, text: "Le Hameau", next: "Q1_descente" },
+			{ id: 4, text: "Parc des Sports", next: "Q1_descente" },
+			{ id: 5, text: "Noveos", next: "Q1_descente" },
+			{ id: 6, text: "Malabry", next: "Q1_descente" },
+			{ id: 7, text: "Vallée aux Loups", next: "Q1_descente" },
+			{ id: 8, text: "Cité Jardin", next: "Q1_descente" },
+			{ id: 9, text: "Les Peintres", next: "Q1_descente" },
+			{ id: 10, text: "Théâtre La Piscine", next: "Q1_descente" },
+			{ id: 11, text: "Petit Châtenay", next: "Q1_descente" },
+			{ id: 12, text: "LaVallée", next: "Q1_descente" },
+			{ id: 13, text: "La Croix de Berny", next: "Q1_descente" }
 		]
 	},
 	{
-		id: "Q1P",
-		text: "Quelle est votre commune de résidence",
-		usesCommuneSelector: true,  // Add this flag to indicate it uses CommuneSelector
-		next: "Q2"  // Explicitly set the next question
+		id: "Q1_descente",
+		text: "Station de descente",
+		options: [
+			{ id: 1, text: "Jardin Parisien", next: "Q2" },
+			{ id: 2, text: "Hôpital Béclère", next: "Q2" },
+			{ id: 3, text: "Le Hameau", next: "Q2" },
+			{ id: 4, text: "Parc des Sports", next: "Q2" },
+			{ id: 5, text: "Noveos", next: "Q2" },
+			{ id: 6, text: "Malabry", next: "Q2" },
+			{ id: 7, text: "Vallée aux Loups", next: "Q2" },
+			{ id: 8, text: "Cité Jardin", next: "Q2" },
+			{ id: 9, text: "Les Peintres", next: "Q2" },
+			{ id: 10, text: "Théâtre La Piscine", next: "Q2" },
+			{ id: 11, text: "Petit Châtenay", next: "Q2" },
+			{ id: 12, text: "LaVallée", next: "Q2" },
+			{ id: 13, text: "La Croix de Berny", next: "Q2" }
+		]
 	},
 	{
 		id: "Q2",
-		text: "Ce lieu est-il …. ? ",
+		text: "Sens",
 		options: [
-			{ id: 1, text: "votre domicile", next: "Q3" },
-			{ id: 2, text: "votre lieu de travail habituel", next: "Q3" },
-			{ id: 3, text: "un lieu de rendez-vous professionnel", next: "Q3" },
-			{ id: 4, text: "votre établissement scolaire", next: "Q3" },
-			{ id: 5, text: "un lieu d'achats, courses, …", next: "Q3" },
-			{ id: 6, text: "un lieu de loisirs", next: "Q3" }
+			{ id: 1, text: "La Croix de Berny", next: "Q3" },
+			{ id: 2, text: "Vers Jardin Parisien", next: "Q3" }
 		]
 	},
 	{
 		id: "Q3",
-		text: "Par quel mode de transport êtes-vous venus jusqu'à la gare ? ",
+		text: "D'où êtes-vous parti ?",
 		options: [
-			{ id: 1, text: "à pied exclusivement", next: "Q11" },
-			{ id: 2, text: "en voiture puis bus", next: "Q10" },
-			{ id: 3, text: "en bus/car exclusivement", next: "Q4" },
-			{ id: 4, text: "en voiture conducteur", next: "Q5" },
-			{ id: 5, text: "en voiture passager (covoiturage ou dépose)", next: "Q9" },
-			{ id: 6, text: "en vélo", next: "Q11" },
-			{ id: 7, text: "en deux-roues motorisés", next: "Q11" },
-			{ id: 8, text: "en train", next: "Q11" },
-			{ id: 9, text: "Autre : Précisez", next: "Q3Precision" }
+			{ id: 1, text: "Domicile", next: "Q4" },
+			{ id: 2, text: "Travail habituel", next: "Q4" },
+			{ id: 3, text: "Affaires professionnelles", next: "Q4" },
+			{ id: 4, text: "Ecole, Lycée, Université", next: "Q4" },
+			{ id: 5, text: "Démarches admin., médicales", next: "Q4" },
+			{ id: 6, text: "Autres affaires personnelles", next: "Q4" },
+			{ id: 7, text: "Loisirs", next: "Q4" },
+			{ id: 8, text: "Achats", next: "Q4" },
+			{ id: 9, text: "Restauration", next: "Q4" },
+			{ id: 10, text: "Accompagnement", next: "Q4" },
+			{ id: 11, text: "Autre", next: "Q4" },
+			{ id: 12, text: "Sans réponse", next: "Q4" }
 		]
 	},
-	{
-		id: "Q3Precision",
-		text: "Précisez la raison",
-		freeText: true,
-		next: "Q4"
-	},
-
 	{
 		id: "Q4",
-		text: "Si vous êtes venus en bus, préciser la ligne de bus utilisée : ",
+		text: "Préciser la ville",
 		options: [
-			{ id: 1, text: "2122", next: "Q11" },
-			{ id: 2, text: "2103", next: "Q11" },
-			{ id: 3, text: "2107", next: "Q11" },
-			{ id: 4, text: "2108", next: "Q11" },
-			{ id: 5, text: "2109", next: "Q11" },
-			{ id: 6, text: "2110", next: "Q11" },
-			{ id: 7, text: "2111", next: "Q11" },
-			{ id: 8, text: "2153", next: "Q11" },
-			{ id: 9, text: "2154", next: "Q11" },
-			{ id: 10, text: "Filéo", next: "Q11" },
-			{ id: 11, text: "TAD de la Goele 1 et 2", next: "Q11" }
+			{ id: 1, text: "Clamart", next: "Q5" },
+			{ id: 2, text: "Le Plessis-Robinson", next: "Q5" },
+			{ id: 3, text: "Châtenay Malabry", next: "Q5" },
+			{ id: 4, text: "Antony", next: "Q5" },
+			{ id: 5, text: "Autre commune", next: "Q4P" }
 		]
+	},
+	{
+		id: "Q4P",
+		text: "Préciser la ville",
+		usesCommuneSelector: true,  // Add this flag to indicate it uses CommuneSelector
+		next: "Q5"  // Explicitly set the next question
 	},
 	{
 		id: "Q5",
-		text: "Si vous êtes venus en voiture comme conducteur Où avez-vous stationné votre voiture ? ",
+		text: "Où vous rendez-vous ?",
 		options: [
-			{ id: 1, text: "Parking relais Pasteur", next: "Q6" },
-			{ id: 2, text: "Parking relais Europe", next: "Q6" },
-			{ id: 3, text: "Parking relais Sud", next: "Q6" },
-			{ id: 4, text: "Stationnement sur voirie", next: "Q7" },
-			{ id: 5, text: "Sur les places de taxi/dépose minute devant la gare", next: "Q7" },
-			{ id: 6, text: "Autre : Précisez", next: "Q5Precision" }
+			{ id: 1, text: "Domicile", next: "Q6" },
+			{ id: 2, text: "Travail habituel", next: "Q6" },
+			{ id: 3, text: "Affaires professionnelles", next: "Q6" },
+			{ id: 4, text: "Ecole, Lycée, Université", next: "Q6" },
+			{ id: 5, text: "Démarches admin., médicales", next: "Q6" },
+			{ id: 6, text: "Autres affaires personnelles", next: "Q6" },
+			{ id: 7, text: "Loisirs", next: "Q6" },
+			{ id: 8, text: "Achats", next: "Q6" },
+			{ id: 9, text: "Restauration", next: "Q6" },
+			{ id: 10, text: "Accompagnement", next: "Q6" },
+			{ id: 11, text: "Autre", next: "Q6" },
+			{ id: 12, text: "Sans réponse", next: "Q6" }
 		]
-	},
-	{
-		id: "Q5Precision",
-		text: "Précisez",
-		freeText: true,
-		next: "Q7"
 	},
 	{
 		id: "Q6",
-		text: "Si vous avez stationné dans un des parkings relais, disposez-vous d'un abonnement ?",
+		text: "Préciser la ville",
 		options: [
-			{ id: 1, text: "Oui", next: "Q8" },
-			{ id: 2, text: "Non", next: "Q8" },
+			{ id: 1, text: "Clamart", next: "Q7" },
+			{ id: 2, text: "Le Plessis-Robinson", next: "Q7" },
+			{ id: 3, text: "Châtenay Malabry", next: "Q7" },
+			{ id: 4, text: "Antony", next: "Q7" },
+			{ id: 5, text: "Autre commune", next: "Q6P" }
 		]
+	},
+	{
+		id: "Q6P",
+		text: "Préciser la ville",
+		usesCommuneSelector: true,  // Add this flag to indicate it uses CommuneSelector
+		next: "Q7"  // Explicitly set the next question
 	},
 	{
 		id: "Q7",
-		text: "Si vous êtes venus en voiture comme conducteur et que vous ne stationnez pas dans un des trois parkings relais. Pour quelle raison n'utilisez vous pas les parkings relais (choix multiples) ?",
-		allowMultiple: true,
+		text: "Nombre de mode de transports utilisés avant",
 		options: [
-			{ id: 1, text: "Manque de place de stationnement disponible", next: "Q8" },
-			{ id: 2, text: "Absence d'abonnement disponible", next: "Q8" },
-			{ id: 3, text: "Pas d'abonnement Navigo annuel permettant d'accéder gratuitement aux parkings", next: "Q8" },
-			{ id: 4, text: "Coût du stationnement", next: "Q8" },
-			{ id: 5, text: "Dysfonctionnement technique", next: "Q8" },
-			{ id: 6, text: "Autre", next: "Q7Precision" }
+			{ id: 1, text: "1", next: "Q8" },
+			{ id: 2, text: "2", next: "Q8" },
+			{ id: 3, text: "3", next: "Q8" },
 		]
 	},
 	{
-		id: "Q7Precision",
-		text: "Précisez",
-		freeText: true,
-		next: "Q8"
-	},
-	{
 		id: "Q8",
-		text: "Si vous êtes venus en voiture comme conducteur quelle est votre durée habituelle de stationnement?",
+		text: "Sexe",
 		options: [
-			{ id: 1, text: "Courte durée (<2h)", next: "Q11" },
-			{ id: 2, text: "Moyenne durée (2 à 6h)", next: "Q11" },
-			{ id: 3, text: "Longue durée (>6h)", next: "Q11" },
-			{ id: 4, text: "Très longue durée (>12h)", next: "Q11" }
+			{ id: 1, text: "Homme", next: "Q9" },
+			{ id: 2, text: "Femme", next: "Q9" }
 		]
 	},
 	{
 		id: "Q9",
-		text: "Si vous êtes venus en voiture comme passager Où avez-vous été déposé ?",
-		options: [
-			{ id: 1, text: "sur les places de dépose minute devant la gare", next: "Q11" },
-			{ id: 2, text: "devant le bâtiment voyageurs par la voirie dépose minute", next: "Q11" },
-			{ id: 3, text: "devant le bâtiment voyageurs par la voirie gare routière", next: "Q11" },
-			{ id: 4, text: "Autre : Précisez", next: "Q9Precision" }
-		]
-	},
-	{
-		id: "Q9Precision",
-		text: "Précisez",
+		text: "Age",
 		freeText: true,
-		next: "Q11"
+		next: "Q10"
 	},
 	{
 		id: "Q10",
-		text: "Si vous êtes venus en voiture puis bus. Dans quelle commune avez-vous stationné votre voiture ?",
+		text: "Fréquence d'utilisation de la ligne",
 		options: [
-			{ id: 1, text: "Saint-Mard", next: "Q11" },
-			{ id: 2, text: "Juilly", next: "Q11" },
-			{ id: 3, text: "Dammartin-en-Goële", next: "Q11" },
-			{ id: 4, text: "Longperrier", next: "Q11" },
-			{ id: 5, text: "Autre : Précisez la ville", next: "Q10P" }
+			{ id: 1, text: "Tous les jours ou presque", next: "Q11" },
+			{ id: 2, text: "3 à 4 jours par semaine", next: "Q11" },
+			{ id: 3, text: "1 à 2 jours par semaine", next: "Q11" },
+			{ id: 4, text: "Moins souvent", next: "Q11" }
 		]
-	},
-	{
-		id: "Q10P",
-		text: "Précisez la ville",
-		usesCommuneSelector: true,
-		next: "Q11"
 	},
 	{
 		id: "Q11",
-		text: "Pour ce trajet en train, quelle est votre gare de descente ?",
+		text: "Titre de transport pour ce déplacement",
 		options: [
-			{ id: 1, text: "Crépy en Valois", next: "Q12" },
-			{ id: 2, text: "Ormoy Villers", next: "Q12" },
-			{ id: 3, text: "Nanteuil le Haudoin", next: "Q12" },
-			{ id: 4, text: "Le Plessis Belleville", next: "Q12" },
-			{ id: 5, text: "Dammartin Juilly Saint-Mard", next: "Q12" },
-			{ id: 6, text: "Thieux Nantouillet", next: "Q12" },
-			{ id: 7, text: "Compans", next: "Q12" },
-			{ id: 8, text: "Mitry-Claye", next: "Q12" },
-			{ id: 9, text: "Aulnay sous Bois", next: "Q12" },
-			{ id: 10, text: "Paris Gare du Nord", next: "Q12" },
-			{ id: 11, text: "Autre : Précisez", next: "Q11Precision" }
+			{ id: 1, text: "Forfait Navigo", next: "Q11_ForfaitNavigo" },
+			{ id: 2, text: "Imagin'R", next: "Q12" },
+			{ id: 3, text: "Navigo Liberté +", next: "Q12" },
+			{ id: 4, text: "Navigo Easy", next: "Q11_NavigoEasy" },
+			{ id: 5, text: "Forfait Améthyste", next: "Q12" },
+			{ id: 6, text: "Titre à l'unité", next: "Q12" },
+			{ id: 7, text: "Forfait Solidarité", next: "Q12" },
+			{ id: 8, text: "Pas de titre", next: "Q12" },
+			{ id: 9, text: "Sans Réponse", next: "Q12" }
 		]
 	},
 	{
-		id: "Q11Precision",
+		id: "Q11_ForfaitNavigo",
 		text: "Précisez",
-		freeText: true,
-		next: "Q12"
+		options: [
+			{ id: 1, text: "An", next: "Q12" },
+			{ id: 2, text: "Mois", next: "Q12" },
+			{ id: 3, text: "Hebdo", next: "Q12" },
+			{ id: 4, text: "Jour", next: "Q12" }
+		]
+	},
+	{
+		id: "Q11_NavigoEasy",
+		text: "Précisez",
+		options: [
+			{ id: 1, text: "FNJ", next: "Q12" },
+			{ id: 2, text: "T+", next: "Q12" },
+			{ id: 3, text: "Autre titre", next: "Q12" }
+		]
 	},
 	{
 		id: "Q12",
-		text: "Quel est le motif de votre déplacement ?",
+		text: "Avant juin 2023, réalisiez-vous ce déplacement?",
 		options: [
-			{ id: 1, text: "Aller sur votre lieu de travail habituel", next: "Q13" },
-			{ id: 2, text: "Rentrer à votre domicile", next: "Q13" },
-			{ id: 3, text: "Un lieu de rendez-vous professionnel", next: "Q13" },
-			{ id: 4, text: "Votre établissement scolaire, université …", next: "Q13" },
-			{ id: 5, text: "Un lieu d'achats, courses, …", next: "Q13" },
-			{ id: 6, text: "Un lieu de loisirs", next: "Q13" },
-			{ id: 7, text: "Autre : Précisez", next: "Q12Precision" }
+			{ id: 1, text: "Oui, mêmes lieux d'origine et destination", next: "Q15" },
+			{ id: 2, text: "Oui, mais changement de lieu", next: "Q13" },
+			{ id: 3, text: "Non", next: "Q14" }
 		]
-	},
-	{
-		id: "Q12Precision",
-		text: "Précisez",
-		freeText: true,
-		next: "Q13"
 	},
 	{
 		id: "Q13",
-		text: "A quelle fréquence faites-vous le trajet d'aujourd'hui ? ",
+		text: "Vous avez changé de lieu de...",
 		options: [
-			{ id: 1, text: "En semaine, entre 3 et 5 fois", next: "end" },
-			{ id: 2, text: "En semaine, moins de 3 fois", next: "end" },
-			{ id: 3, text: "Le week-end principalement", next: "end" },
-			{ id: 4, text: "Moins d'une fois par semaine", next: "end" },
-			{ id: 5, text: "Moins d'une fois par mois", next: "end" }
+			{ id: 1, text: "Loisir", next: "Q14" },
+			{ id: 2, text: "Achat", next: "Q13b" },
+			{ id: 3, text: "Restauration", next: "Q14" },
+			{ id: 4, text: "Logement", next: "Q14" },
+			{ id: 5, text: "Travail", next: "Q14" },
+			{ id: 6, text: "Etudes", next: "Q14" },
+			{ id: 7, text: "Démarches adm., méd", next: "Q14" },
+			{ id: 8, text: "Affaires personnelles", next: "Q14" },
+			{ id: 9, text: "Autre", subtext: "préciser", next: "Q14" }
 		]
-	}
+	},
+	{
+		id: "Q13b",
+		text: "Ce changement de lieu a-t-il été motivé par la création du T10 ?",
+		options: [
+			{ id: 1, text: "Oui", next: "Q14" },
+			{ id: 2, text: "Non", next: "Q14" }
+		]
+	},
+	{
+		id: "Q14",
+		text: "Pour quelles raisons?",
+		options: [
+			{ id: 1, text: "La création de ligne T10 vous a encouragé à réaliser ce nouveau déplacement", next: "end" },
+			{ id: 2, text: "C'est mon premier emploi", next: "end" },
+			{ id: 3, text: "Aujourd'hui déplacement exceptionnel", next: "Q14P" },
+			{ id: 4, text: "Autre", next: "Q14P" }
+		]
+	},
+	{
+		id: "Q14P",
+		text: "Préciser",
+		freeText: true,
+		next: "end"
+	},
+	{
+		id: "Q15",
+		text: "Il y a 2 ans, vous réalisiez ce déplacement en utilisant:",
+		options: [
+			{ id: 1, text: "UNIQUEMENT la voiture ou le 2 roues motorisé", next: "Q15a" },
+			{ id: 2, text: "UNIQUEMENT la marche", next: "Q17" },
+			{ id: 3, text: "D'autres modes de transport", next: "Q16" }
+		]
+	},
+	{
+		id: "Q15a",
+		text: "Pourquoi avez-vous abandonné votre véhicule personnel ?",
+		options: [
+			{ id: 1, text: "Le prolongement de la ligne T10", next: "Q15b" },
+			{ id: 2, text: "Coût élevé du véhicule", next: "Q15b" },
+			{ id: 3, text: "Difficulté de circulation", next: "Q15b" },
+			{ id: 4, text: "Difficulté de stationnement", next: "Q15b" },
+			{ id: 5, text: "Panne du véhicule", next: "Q15b" },
+			{ id: 6, text: "Autres facteurs", next: "Q15b" },
+			{ id: 7, text: "Sans réponse", next: "Q15b" }
+		]
+	},
+	{
+		id: "Q15b",
+		text: "Pour ce déplacement il y a deux ans, combien de km parcouriez- vous ?",
+		freeText: true,
+		next: "Q17"
+	},
+	{
+		id: "Q16",
+		text: "Quels modes de transport utilisiez-vous ?",
+		freeText: true,
+		next: "Q17"
+	},
+	{
+		id: "Q17",
+		text: "Titre de transport avant juin 2023",
+		options: [
+			{ id: 1, text: "Même titre", next: "Q18" },
+			{ id: 2, text: "Autre titre", next: "Q18" }
+		]
+	},
+	{
+		id: "Q17P",
+		text: "Titre de transport pour ce déplacement",
+		options: [
+			{ id: 1, text: "Forfait Navigo", next: "Q18" },
+			{ id: 2, text: "Imagin'R", next: "Q18" },
+			{ id: 3, text: "Navigo Liberté +", next: "Q18" },
+			{ id: 4, text: "Navigo Easy", next: "Q18" },
+			{ id: 5, text: "Forfait Améthyste", next: "Q18" },
+			{ id: 6, text: "Titre à l'unité", next: "Q18" },
+			{ id: 7, text: "Forfait Solidarité", next: "Q18" },
+			{ id: 8, text: "Pas de titre", next: "Q18" },
+			{ id: 9, text: "Sans Réponse", next: "Q18" }
+		]
+	},
+	{
+		id: "Q18",
+		text: "Par rapport à il y a 2 ans, estimez-vous avoir gagné du temps pour réaliser ce même déplacement aujourd'hui ?",
+		options: [
+			{ id: 1, text: "Oui, gagné", subtext: "____ minutes", next: "end" },
+			{ id: 2, text: "Non, perdu", subtext: "____ minutes", next: "end" },
+			{ id: 3, text: "Temps équivalent", next: "end" },
+			{ id: 4, text: "Sans réponse/NC", next: "end" }
+		]
+	},
 ];
-

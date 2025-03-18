@@ -133,14 +133,7 @@ const downloadData = async () => {
     const data = querySnapshot.docs.map((doc) => {
       const docData = doc.data();
       return headerOrder.reduce((acc, key) => {
-        if (key.includes("_COMMUNE") || key.includes("_CODE_INSEE") ||key.includes("_COMMUNE_LIBRE")) {
-     
-            acc[key] = docData[key] || "";
-
-        } else {
-          // Include all responses, even if they are 0
-          acc[key] = docData[key] !== undefined ? docData[key] : "";
-        }
+        acc[key] = docData[key] !== undefined ? docData[key] : "";
         return acc;
       }, {});
     });
