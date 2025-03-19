@@ -342,10 +342,66 @@ export const questions = [
 		freeText: true,
 		next: "Q17"
 	},
-	{
+	{		
 		id: "Q16",
-		text: "Quels modes de transport utilisiez-vous ?",
-		freeText: true,
+		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q16+1Q"
+	},
+	{
+		id: "Q16+1Q",
+		text: "Avez vous utiliser un autre mode de transport l y a 2 ans pour réaliser ce déplacement :",
+		options: [
+			{ id: 1, text: "Oui", next: "Q16+1" },
+			{ id: 2, text: "Non", next: "Q17" }
+		]
+	},
+	{		
+		id: "Q16+1",
+		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q16+2Q"
+	},
+	{
+		id: "Q16+2Q",
+		text: "Avez vous utiliser un autre mode de transport l y a 2 ans pour réaliser ce déplacement :",
+		options: [
+			{ id: 1, text: "Oui", next: "Q16+2" },
+			{ id: 2, text: "Non", next: "Q17" }
+		]
+	},
+	{		
+		id: "Q16+2",
+		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q16+3Q"
+	},
+	{
+		id: "Q16+3Q",
+		text: "Avez vous utiliser un autre mode de transport l y a 2 ans pour réaliser ce déplacement :",
+		options: [
+			{ id: 1, text: "Oui", next: "Q16+3" },
+			{ id: 2, text: "Non", next: "Q17" }
+		]
+	},
+	{		
+		id: "Q16+3",
+		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q16+4Q"
+	},
+	{
+		id: "Q16+4Q",
+		text: "Avez vous utiliser un autre mode de transport l y a 2 ans pour réaliser ce déplacement :",
+		options: [
+			{ id: 1, text: "Oui", next: "Q16+4" },
+			{ id: 2, text: "Non", next: "Q17" }
+		]
+	},
+	{
+		id: "Q16+4",
+		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		usesModeSelector: true,
 		next: "Q17"
 	},
 	{
