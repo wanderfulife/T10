@@ -21,15 +21,16 @@
 
       <!-- Start Survey Step -->
       <div v-else-if="currentStep === 'start'" class="start-survey-container">
-        <h2>
-          Bonjour,<br /><br />
-          Nous réalisons une enquête pour le compte d'Île-de-France
-          Mobilités.<br /><br />
-          Pourriez-vous m'accorder quelques instants ?<br /><br />
+        <h2>Bonjour,</h2>
+        <p class="welcome-text">
+          Nous réalisons une enquête pour le compte d'Île-de-France Mobilités.
+        </p>
+        <p class="welcome-text">Pourriez-vous m'accorder quelques instants ?</p>
+        <p class="welcome-text">
           Nous vous invitons à répondre à ce questionnaire même si vous avez
-          déjà été sollicité.<br /><br />
-          Merci.
-        </h2>
+          déjà été sollicité.
+        </p>
+        <p class="welcome-text">Merci.</p>
         <button @click="startSurvey" class="btn-next">
           COMMENCER QUESTIONNAIRE
         </button>
@@ -198,7 +199,9 @@
       </div>
 
       <!-- Logo -->
-      <img class="logo" src="../assets/Alycelogo.webp" alt="Logo Alyce" />
+      <div class="logo-container">
+        <img class="logo" src="../assets/Alycelogo.webp" alt="Logo Alyce" />
+      </div>
     </div>
 
     <!-- Footer -->
@@ -778,11 +781,27 @@ body {
 }
 
 .start-survey-container {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 50vh;
   width: 100%;
-  margin-bottom: 5%;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.start-survey-container h2 {
+  margin-bottom: 20px;
+}
+
+.welcome-text {
+  width: 100%;
+  margin: 8px 0;
+  text-align: center;
+  padding: 0 5px;
+  box-sizing: border-box;
+  color: white;
+  word-wrap: break-word;
 }
 
 .content-container {
@@ -790,8 +809,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5% 0;
-  width: 90%;
+  padding: 15px;
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
   box-sizing: border-box;
@@ -801,6 +820,8 @@ body {
 .question-container {
   width: 100%;
   margin-bottom: 30px;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .input-container {
@@ -812,6 +833,10 @@ body {
 h2 {
   text-align: center;
   width: 100%;
+  word-wrap: break-word;
+  font-size: clamp(16px, 5vw, 24px);
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .form-control {
@@ -840,11 +865,13 @@ h2 {
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 .btn-next {
   background-color: #2ea44f; /* This is your app's green color */
-  width: 400px; /* Match width with other elements */
+  width: 100%;
+  max-width: 400px;
 }
 
 .btn-next:disabled {
@@ -854,7 +881,8 @@ h2 {
 
 .btn-return {
   background-color: grey;
-  width: 400px; /* Match width with other elements */
+  width: 100%;
+  max-width: 400px;
   margin-top: 15px; /* Adjust spacing */
 }
 
@@ -863,20 +891,29 @@ h2 {
   text-align: left;
 }
 
+.logo-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
 .logo {
-  max-width: 25%;
+  max-width: 160px;
   height: auto;
-  margin-top: 40px;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
 .footer {
   background: linear-gradient(to right, #4c4faf, #3f51b5);
-  padding: 20px;
+  padding: 15px;
   text-align: center;
   width: 100%;
   box-sizing: border-box;
   position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 /* Progress bar */
@@ -906,12 +943,14 @@ h2 {
 /* Add these rules here */
 .multiple-choice-container .btn-next {
   background-color: #4caf50;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   margin: 15px auto;
 }
 
 .multiple-choice-container .btn-return {
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   margin: 15px auto;
 }
 
@@ -976,13 +1015,55 @@ h2 {
   }
 
   .logo {
-    margin-top: 30px;
+    max-width: 140px;
+  }
+
+  .content-container {
+    width: 100%;
+    padding: 5% 15px;
   }
 }
 
 @media screen and (max-width: 480px) {
   .form-control {
     max-width: 100%;
+  }
+
+  .multiple-choice-container {
+    padding: 0 5px;
+  }
+
+  .checkbox-label {
+    padding: 12px;
+  }
+
+  .logo {
+    max-width: 100px;
+  }
+
+  .logo-container {
+    margin: 10px 0;
+  }
+
+  .option-text {
+    font-size: 14px;
+  }
+
+  .start-survey-container {
+    margin-bottom: 10px;
+  }
+
+  .content-container {
+    padding: 10px;
+  }
+
+  .footer {
+    padding: 10px;
+  }
+
+  .welcome-text {
+    margin: 5px 0;
+    font-size: 15px;
   }
 }
 </style>

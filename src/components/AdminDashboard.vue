@@ -229,6 +229,7 @@ const downloadData = async () => {
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
+  box-sizing: border-box;
 }
 
 .close {
@@ -251,15 +252,19 @@ const downloadData = async () => {
 }
 
 .dashboard-content {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 20px;
 }
 
 .dashboard-card {
   background-color: #34495e;
-  border-radius: 8px;
-  padding: 15px;
+  border-radius: 10px;
+  padding: 20px;
+  flex: 1 1 250px;
+  min-width: 250px;
+  box-sizing: border-box;
 }
 
 .dashboard-card h3 {
@@ -294,24 +299,45 @@ const downloadData = async () => {
 .form-control {
   width: 100%;
   padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #34495e;
+  margin-bottom: 20px;
   border-radius: 5px;
-  background-color: #34495e;
+  border: 1px solid #7f8c8d;
+  background-color: #2c3e50;
   color: #ecf0f1;
+  box-sizing: border-box;
 }
 
-@media (max-width: 600px) {
-  .modal-content {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    max-height: 100vh;
+@media (max-width: 768px) {
+  .dashboard-card {
+    flex: 1 1 100%;
+    min-width: 100%;
   }
 
+  .btn-signin,
+  .btn-download {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+
+  .modal-content {
+    padding: 15px;
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
   .close {
-    top: 10px;
     right: 10px;
+    top: 10px;
+    font-size: 24px;
+  }
+
+  .dashboard-content {
+    gap: 10px;
+  }
+
+  .dashboard-card {
+    padding: 15px;
   }
 }
 </style>

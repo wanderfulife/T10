@@ -444,6 +444,8 @@ watch(busLine, (newVal) => {
   padding: 15px;
   border-radius: 8px;
   color: white;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-label {
@@ -461,6 +463,7 @@ watch(busLine, (newVal) => {
   border-radius: 4px;
   background-color: #333;
   color: white;
+  box-sizing: border-box;
 }
 
 .mode-options,
@@ -471,6 +474,8 @@ watch(busLine, (newVal) => {
   border-radius: 4px;
   margin-bottom: 10px;
   background-color: #354770;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .mode-option,
@@ -480,6 +485,8 @@ watch(busLine, (newVal) => {
   cursor: pointer;
   border-bottom: 1px solid #4a5a83;
   color: white;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .mode-option:hover,
@@ -496,6 +503,8 @@ watch(busLine, (newVal) => {
   margin-top: -10px;
   margin-bottom: 10px;
   background-color: #354770;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .selection-summary {
@@ -541,6 +550,7 @@ button:disabled {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
+  box-sizing: border-box;
 }
 
 /* Make sure buttons from bootstrap don't conflict */
@@ -554,5 +564,22 @@ button:disabled {
 
 .mt-2 {
   margin-top: 0.5rem;
+}
+
+@media screen and (max-width: 480px) {
+  .mode-option,
+  .line-option,
+  .station-option {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .form-group {
+    padding: 10px;
+  }
+
+  .selection-summary {
+    font-size: 14px;
+  }
 }
 </style> 
