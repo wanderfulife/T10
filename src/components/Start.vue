@@ -575,14 +575,33 @@ const nextQuestion = (forcedNextId = null) => {
   } else if (nextQuestionId) {
     const nextIndex = questions.findIndex((q) => q.id === nextQuestionId);
     if (nextIndex !== -1) {
-      currentQuestionIndex.value = nextIndex;
-      questionPath.value.push(nextQuestionId);
+      // Check if the next question is a conditional question
+      const nextQ = questions[nextIndex];
+      if (nextQ.isConditional && typeof nextQ.condition === "function") {
+        // Evaluate the condition and get the appropriate next question ID
+        const conditionResult = nextQ.condition();
+        nextQuestionId = conditionResult ? nextQ.nextIfTrue : nextQ.nextIfFalse;
+
+        // Find the new index for the actual next question after condition
+        const actualNextIndex = questions.findIndex(
+          (q) => q.id === nextQuestionId
+        );
+        if (actualNextIndex !== -1) {
+          currentQuestionIndex.value = actualNextIndex;
+          questionPath.value.push(nextQuestionId);
+        }
+      } else {
+        // Normal question handling (non-conditional)
+        currentQuestionIndex.value = nextIndex;
+        questionPath.value.push(nextQuestionId);
+      }
+
       freeTextAnswer.value = "";
 
-      // Execute onEnter function if it exists
-      const nextQuestion = questions[nextIndex];
-      if (typeof nextQuestion.onEnter === "function") {
-        nextQuestion.onEnter(answers.value);
+      // Execute onEnter function if it exists for the current question
+      const activeQuestion = questions[currentQuestionIndex.value];
+      if (typeof activeQuestion.onEnter === "function") {
+        activeQuestion.onEnter(answers.value);
       }
     }
   }

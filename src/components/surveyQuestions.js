@@ -1,6 +1,3 @@
-
-
-
 export const questions = [
 	{
 		id: "Q1_montee",
@@ -128,7 +125,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M-1",
-		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M-2Q"
 	},
@@ -140,9 +137,9 @@ export const questions = [
 			{ id: 2, text: "Non", next: "Q7M+1Q" }
 		]
 	},
-	{		
+	{
 		id: "Q7M-2",
-		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M-3Q"
 	},
@@ -156,7 +153,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M-3",
-		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M+1Q"
 	},
@@ -170,7 +167,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M+1",
-		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M+2Q"
 	},
@@ -184,7 +181,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M+2",
-		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M+3Q"
 	},
@@ -198,7 +195,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M+3",
-		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q8"
 	},
@@ -214,7 +211,18 @@ export const questions = [
 		id: "Q9",
 		text: "Age",
 		freeText: true,
-		next: "Q10"
+		next: "checkIfWeekend"
+	},
+	{
+		id: "checkIfWeekend",
+		isConditional: true,
+		condition: () => {
+			const today = new Date();
+			const day = today.getDay();
+			return day === 0 || day === 6;
+		},
+		nextIfTrue: "Q10bis",
+		nextIfFalse: "Q10"
 	},
 	{
 		id: "Q10",
@@ -224,6 +232,18 @@ export const questions = [
 			{ id: 2, text: "3 à 4 jours par semaine", next: "Q11" },
 			{ id: 3, text: "1 à 2 jours par semaine", next: "Q11" },
 			{ id: 4, text: "Moins souvent", next: "Q11" }
+		]
+	},
+	{
+		id: "Q10bis",
+		text: "En week-end Avec quelle fréquence effectuez-vous ce déplacement de votre point de départ à votre point d'arrivée ?",
+		options: [
+			{ id: 1, text: "Tous les week-ends ou presque", next: "Q11" },
+			{ id: 2, text: "Au moins 1 week-end sur 2", next: "Q11" },
+			{ id: 3, text: "Environ 1 week-end par mois", next: "Q11" },
+			{ id: 4, text: "Moins souvent", next: "Q11" },
+			{ id: 5, text: "C'est la première fois", next: "Q11" },
+			{ id: 6, text: "Sans réponse", next: "Q11" }
 		]
 	},
 	{
@@ -342,9 +362,9 @@ export const questions = [
 		freeText: true,
 		next: "Q17"
 	},
-	{		
+	{
 		id: "Q16",
-		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q16+1Q"
 	},
@@ -356,9 +376,9 @@ export const questions = [
 			{ id: 2, text: "Non", next: "Q17" }
 		]
 	},
-	{		
+	{
 		id: "Q16+1",
-		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q16+2Q"
 	},
@@ -370,9 +390,9 @@ export const questions = [
 			{ id: 2, text: "Non", next: "Q17" }
 		]
 	},
-	{		
+	{
 		id: "Q16+2",
-		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q16+3Q"
 	},
@@ -384,9 +404,9 @@ export const questions = [
 			{ id: 2, text: "Non", next: "Q17" }
 		]
 	},
-	{		
+	{
 		id: "Q16+3",
-		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q16+4Q"
 	},
@@ -400,7 +420,7 @@ export const questions = [
 	},
 	{
 		id: "Q16+4",
-		text: "Citer dans l’ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés il y a 2 ans pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q17"
 	},
@@ -409,7 +429,7 @@ export const questions = [
 		text: "Titre de transport avant juin 2023",
 		options: [
 			{ id: 1, text: "Même titre", next: "Q18" },
-			{ id: 2, text: "Autre titre", next: "Q18" }
+			{ id: 2, text: "Autre titre", next: "Q17P" }
 		]
 	},
 	{
