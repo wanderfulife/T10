@@ -105,10 +105,10 @@ export const questions = [
 		id: "Q6",
 		text: "Préciser la ville",
 		options: [
-			{ id: 1, text: "Clamart", next: "Q7" },
-			{ id: 2, text: "Le Plessis-Robinson", next: "Q7" },
-			{ id: 3, text: "Châtenay Malabry", next: "Q7" },
-			{ id: 4, text: "Antony", next: "Q7" },
+			{ id: 1, text: "Clamart", next: "Q7M-1Q" },
+			{ id: 2, text: "Le Plessis-Robinson", next: "Q7M-1Q" },
+			{ id: 3, text: "Châtenay Malabry", next: "Q7M-1Q" },
+			{ id: 4, text: "Antony", next: "Q7M-1Q" },
 			{ id: 5, text: "Autre commune", next: "Q6P" }
 		]
 	},
@@ -116,16 +116,91 @@ export const questions = [
 		id: "Q6P",
 		text: "Préciser la ville",
 		usesCommuneSelector: true,  // Add this flag to indicate it uses CommuneSelector
-		next: "Q7"  // Explicitly set the next question
+		next: "Q7M-1Q"  // Explicitly set the next question
 	},
 	{
-		id: "Q7",
-		text: "Nombre de mode de transports utilisés avant",
+		id: "Q7M-1Q",
+		text: "Avez vous utilisé un autre mode de transport avant d'arriver ici ? (M-1)",
 		options: [
-			{ id: 1, text: "1", next: "Q8" },
-			{ id: 2, text: "2", next: "Q8" },
-			{ id: 3, text: "3", next: "Q8" },
+			{ id: 1, text: "Oui", next: "Q7M-1" },
+			{ id: 2, text: "Non", next: "Q7M+1Q" }
 		]
+	},
+	{
+		id: "Q7M-1",
+		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q7M-2Q"
+	},
+	{
+		id: "Q7M-2Q",
+		text: "Avez vous utilisé un autre mode de transport avant ? (M-2)",
+		options: [
+			{ id: 1, text: "Oui", next: "Q7M-2" },
+			{ id: 2, text: "Non", next: "Q7M+1Q" }
+		]
+	},
+	{		
+		id: "Q7M-2",
+		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q7M-3Q"
+	},
+	{
+		id: "Q7M-3Q",
+		text: "Avez vous utilisé un autre mode de transport avant ? (M-3)",
+		options: [
+			{ id: 1, text: "Oui", next: "Q7M-3" },
+			{ id: 2, text: "Non", next: "Q7M+1Q" }
+		]
+	},
+	{
+		id: "Q7M-3",
+		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q7M+1Q"
+	},
+	{
+		id: "Q7M+1Q",
+		text: "Allez vous utiliser un autre mode de transport apres cette station ? (M+1)",
+		options: [
+			{ id: 1, text: "Oui", next: "Q7M+1" },
+			{ id: 2, text: "Non", next: "Q8" }
+		]
+	},
+	{
+		id: "Q7M+1",
+		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q7M+2Q"
+	},
+	{
+		id: "Q7M+2Q",
+		text: "Allez vous utiliser un autre mode de transport apres cette station ? (M+2)",
+		options: [
+			{ id: 1, text: "Oui", next: "Q7M+2" },
+			{ id: 2, text: "Non", next: "Q8" }
+		]
+	},
+	{
+		id: "Q7M+2",
+		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q7M+3Q"
+	},
+	{
+		id: "Q7M+3Q",
+		text: "Allez vous utiliser un autre mode de transport apres cette station ? (M+3)",
+		options: [
+			{ id: 1, text: "Oui", next: "Q7M+3" },
+			{ id: 2, text: "Non", next: "Q8" }
+		]
+	},
+	{
+		id: "Q7M+3",
+		text: "Citer dans l’ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		usesModeSelector: true,
+		next: "Q8"
 	},
 	{
 		id: "Q8",
@@ -198,16 +273,22 @@ export const questions = [
 		id: "Q13",
 		text: "Vous avez changé de lieu de...",
 		options: [
-			{ id: 1, text: "Loisir", next: "Q14" },
+			{ id: 1, text: "Loisir", next: "end" },
 			{ id: 2, text: "Achat", next: "Q13b" },
-			{ id: 3, text: "Restauration", next: "Q14" },
-			{ id: 4, text: "Logement", next: "Q14" },
-			{ id: 5, text: "Travail", next: "Q14" },
-			{ id: 6, text: "Etudes", next: "Q14" },
-			{ id: 7, text: "Démarches adm., méd", next: "Q14" },
-			{ id: 8, text: "Affaires personnelles", next: "Q14" },
-			{ id: 9, text: "Autre", subtext: "préciser", next: "Q14" }
+			{ id: 3, text: "Restauration", next: "end" },
+			{ id: 4, text: "Logement", next: "end" },
+			{ id: 5, text: "Travail", next: "end" },
+			{ id: 6, text: "Etudes", next: "end" },
+			{ id: 7, text: "Démarches adm., méd", next: "end" },
+			{ id: 8, text: "Affaires personnelles", next: "end" },
+			{ id: 9, text: "Autre", next: "Q13P" }
 		]
+	},
+	{
+		id: "Q13P",
+		text: "Précisez",
+		freeText: true,
+		next: "end"
 	},
 	{
 		id: "Q13b",

@@ -118,12 +118,22 @@ const downloadData = async () => {
       "HEURE_FIN",
     ];
 
+    // Process questions to create all needed headers
     props.questions.forEach((question) => {
       if (question.usesCommuneSelector) {
         headerOrder.push(
           `${question.id}_COMMUNE`,
           `${question.id}_CODE_INSEE`,
           `${question.id}_COMMUNE_LIBRE`
+        );
+      } else if (question.usesModeSelector) {
+        headerOrder.push(
+          `${question.id}_MODE`,
+          `${question.id}_LINE`,
+          `${question.id}_DEPARTURE_STATION`,
+          `${question.id}_DEPARTURE_STATION_ID`,
+          `${question.id}_ARRIVAL_STATION`,
+          `${question.id}_ARRIVAL_STATION_ID`
         );
       } else {
         headerOrder.push(question.id);

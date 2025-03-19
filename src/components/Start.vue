@@ -69,6 +69,51 @@
             </button>
           </div>
 
+          <!-- Mode Selector -->
+          <div v-else-if="currentQuestion.usesModeSelector">
+            <ModeSelector v-model="modeSelections[currentQuestion.id]" />
+            <div
+              v-if="modeSelections[currentQuestion.id]"
+              class="selection-summary"
+            >
+              <div
+                v-if="modeSelections[currentQuestion.id].mode"
+                class="selection-item"
+              >
+                <span class="selection-label">Mode:</span>
+                {{ modeSelections[currentQuestion.id].mode }}
+              </div>
+              <div
+                v-if="modeSelections[currentQuestion.id].line"
+                class="selection-item"
+              >
+                <span class="selection-label">Ligne:</span>
+                {{ modeSelections[currentQuestion.id].line }}
+              </div>
+              <div
+                v-if="modeSelections[currentQuestion.id].departureStation"
+                class="selection-item"
+              >
+                <span class="selection-label">Station de montée:</span>
+                {{ modeSelections[currentQuestion.id].departureStation.name }}
+              </div>
+              <div
+                v-if="modeSelections[currentQuestion.id].arrivalStation"
+                class="selection-item"
+              >
+                <span class="selection-label">Station de descente:</span>
+                {{ modeSelections[currentQuestion.id].arrivalStation.name }}
+              </div>
+            </div>
+            <button
+              @click="handleModeSelection"
+              class="btn-next"
+              :disabled="!isModeSelectorComplete"
+            >
+              {{ isLastQuestion ? "Terminer" : "Suivant" }}
+            </button>
+          </div>
+
           <!-- Standard Single Choice Questions -->
           <div
             v-else-if="
@@ -170,6 +215,7 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { questions } from "./surveyQuestions.js";
 import CommuneSelector from "./CommuneSelector.vue";
+import ModeSelector from "./ModeSelector.vue";
 import AdminDashboard from "./AdminDashboard.vue";
 
 // Refs
@@ -189,6 +235,7 @@ const filteredStations = ref([]);
 const multipleAnswers = ref([]);
 const communeSelections = ref({});
 const postalCodePrefixes = ref({});
+const modeSelections = ref({});
 
 // Firestore refs
 const surveyCollectionRef = collection(db, "T10");
@@ -228,6 +275,46 @@ const currentQuestion = computed(() => {
     };
   }
   return null;
+});
+
+// Computed property to check if mode selection is complete
+const isModeSelectorComplete = computed(() => {
+  if (!currentQuestion.value || !currentQuestion.value.usesModeSelector)
+    return false;
+
+  const selection = modeSelections.value[currentQuestion.value.id];
+  if (!selection) return false;
+
+  // For additional modes (not in stationData), just having a mode is enough
+  const additionalModes = [
+    "Bus",
+    "Orlyval",
+    "Marche",
+    "Transport Employeur",
+    "Voiture (Conducteur)",
+    "2 roues motorisé (moto, scooter)",
+    "Autre mode",
+    "Train SNCF Grande Ligne / TER",
+    "Voiture (Passager)",
+    "2 roues non motorisé (vélo)",
+  ];
+
+  if (additionalModes.includes(selection.mode)) {
+    // For Bus, we need both mode and line
+    if (selection.mode === "Bus") {
+      return selection.mode && selection.line;
+    }
+    // For other additional modes, just having the mode is enough
+    return selection.mode ? true : false;
+  }
+
+  // For standard modes (from stationData), check all fields
+  return (
+    selection.mode &&
+    selection.line &&
+    selection.departureStation &&
+    selection.arrivalStation
+  );
 });
 
 // Methods
@@ -310,8 +397,11 @@ const startSurvey = () => {
     second: "2-digit",
   });
   currentStep.value = "survey";
-  currentQuestionIndex.value = 0; // Start from Q2 after the start message
+  currentQuestionIndex.value = 0; // Start from first question
   isSurveyComplete.value = false;
+
+  // Initialize with empty answers object, don't set Q1 to null
+  answers.value = {};
 };
 
 // Add this near the top of the <script setup> section
@@ -386,6 +476,90 @@ const handleCommuneSelection = () => {
   }
 };
 
+const handleModeSelection = () => {
+  if (currentQuestion.value.usesModeSelector) {
+    const questionId = currentQuestion.value.id;
+    const selection = modeSelections.value[questionId];
+
+    if (!selection || !selection.mode) return;
+
+    // List of additional modes
+    const additionalModes = [
+      "Bus",
+      "Orlyval",
+      "Marche",
+      "Transport Employeur",
+      "Voiture (Conducteur)",
+      "2 roues motorisé (moto, scooter)",
+      "Autre mode",
+      "Train SNCF Grande Ligne / TER",
+      "Voiture (Passager)",
+      "2 roues non motorisé (vélo)",
+    ];
+
+    // Handle additional modes differently
+    if (additionalModes.includes(selection.mode)) {
+      // For Bus mode
+      if (selection.mode === "Bus") {
+        if (selection.line) {
+          answers.value[`${questionId}_MODE`] = selection.mode;
+          answers.value[`${questionId}_LINE`] = selection.line;
+          answers.value[`${questionId}_DEPARTURE_STATION`] = "";
+          answers.value[`${questionId}_ARRIVAL_STATION`] = "";
+
+          console.log(`Stored bus selection for ${questionId}:`, {
+            mode: selection.mode,
+            line: selection.line,
+          });
+
+          nextQuestion();
+        }
+      }
+      // For other additional modes
+      else {
+        answers.value[`${questionId}_MODE`] = selection.mode;
+        answers.value[`${questionId}_LINE`] = "";
+        answers.value[`${questionId}_DEPARTURE_STATION`] = "";
+        answers.value[`${questionId}_ARRIVAL_STATION`] = "";
+
+        console.log(`Stored additional mode selection for ${questionId}:`, {
+          mode: selection.mode,
+        });
+
+        nextQuestion();
+      }
+    }
+    // Handle standard modes from stationData
+    else if (
+      selection.mode &&
+      selection.line &&
+      selection.departureStation &&
+      selection.arrivalStation
+    ) {
+      answers.value[`${questionId}_MODE`] = selection.mode;
+      answers.value[`${questionId}_LINE`] = selection.line;
+      answers.value[`${questionId}_DEPARTURE_STATION`] =
+        selection.departureStation.name;
+      answers.value[`${questionId}_DEPARTURE_STATION_ID`] =
+        selection.departureStation.id;
+      answers.value[`${questionId}_ARRIVAL_STATION`] =
+        selection.arrivalStation.name;
+      answers.value[`${questionId}_ARRIVAL_STATION_ID`] =
+        selection.arrivalStation.id;
+
+      // Log the stored mode selection for debugging
+      console.log(`Stored standard mode selection for ${questionId}:`, {
+        mode: selection.mode,
+        line: selection.line,
+        departureStation: selection.departureStation.name,
+        arrivalStation: selection.arrivalStation.name,
+      });
+
+      nextQuestion();
+    }
+  }
+};
+
 const nextQuestion = (forcedNextId = null) => {
   let nextQuestionId = forcedNextId;
   if (!nextQuestionId && currentQuestion.value) {
@@ -430,67 +604,97 @@ const previousQuestion = () => {
   }
 };
 
-// Update the finishSurvey function with more detailed logging
+// Simplify the finishSurvey function to just directly save all data
 const finishSurvey = async () => {
   isSurveyComplete.value = true;
   const now = new Date();
 
-  // Log all answers before saving to Firebase
-  console.log(
-    "All answers before saving:",
-    JSON.stringify(answers.value, null, 2)
-  );
-
-  const uniqueId = await getNextId();
-
-  let surveyData = {
-    ID_questionnaire: uniqueId,
-    HEURE_DEBUT: startDate.value,
-    DATE: now.toLocaleDateString("fr-FR").replace(/\//g, "-"),
-    JOUR: now.toLocaleDateString("fr-FR", { weekday: "long" }),
-    ENQUETEUR: enqueteur.value,
-    HEURE_FIN: now.toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    }),
-    PORT_ID_ORIGIN: answers.value.PORT_ID_ORIGIN || "",
-    PORT_ID_DESTINATION: answers.value.PORT_ID_DESTINATION || "",
-  };
-
-  // Include all answers in the survey data
-  Object.keys(answers.value).forEach((key) => {
-    surveyData[key] = answers.value[key];
-  });
-
-  console.log(
-    "Final survey data to be saved:",
-    JSON.stringify(surveyData, null, 2)
-  );
+  // IMPORTANT: Create a deep copy of the answers object immediately
+  const answersCopy = JSON.parse(JSON.stringify(answers.value));
 
   try {
-    const docRef = await addDoc(surveyCollectionRef, surveyData);
+    // Log all answers before saving to Firebase
+    console.log(
+      "All answers before saving:",
+      JSON.stringify(answersCopy, null, 2)
+    );
+
+    // Get document ID
+    const uniqueId = await getNextId();
+
+    // Create metadata
+    const metadata = {
+      ID_questionnaire: uniqueId,
+      HEURE_DEBUT: startDate.value,
+      DATE: now.toLocaleDateString("fr-FR").replace(/\//g, "-"),
+      JOUR: now.toLocaleDateString("fr-FR", { weekday: "long" }),
+      ENQUETEUR: enqueteur.value,
+      HEURE_FIN: now.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+    };
+
+    // IMPORTANT: Use our deep copy of answers that cannot be modified
+    const dataToSave = { ...metadata, ...answersCopy };
+
+    console.log(
+      "Complete data being saved to Firebase:",
+      JSON.stringify(dataToSave, null, 2)
+    );
+
+    // Check if any answers got lost
+    for (const key in answersCopy) {
+      if (dataToSave[key] === undefined) {
+        console.error(`Key ${key} is missing in dataToSave!`);
+      }
+    }
+
+    // Save the document to Firebase
+    const docRef = await addDoc(surveyCollectionRef, dataToSave);
     console.log("Survey data saved successfully with ID:", docRef.id);
 
-    // Verify the saved data
-    const savedDoc = await getDoc(docRef);
-    console.log(
-      "Verified saved data:",
-      JSON.stringify(savedDoc.data(), null, 2)
-    );
+    // Double-check saving by retrieving the document we just saved
+    const savedDoc = await getDoc(doc(db, "T10", docRef.id));
+    console.log("Saved data retrieved:", savedDoc.exists());
+    if (savedDoc.exists()) {
+      const savedData = savedDoc.data();
+      console.log("Saved data content:", JSON.stringify(savedData, null, 2));
+
+      // Verify all keys were saved
+      for (const key in answersCopy) {
+        if (savedData[key] === undefined) {
+          console.error(`Key ${key} was not saved to Firebase!`);
+        }
+      }
+    }
+
+    // At this point it's safe to clear survey data - the copy has been saved
+    // DON'T clear answers here - only in the resetSurvey function
   } catch (error) {
     console.error("Error saving survey data:", error);
-    console.error("Error details:", error.message);
+    console.error("Error details:", error.message, error.stack);
+    alert("Une erreur s'est produite lors de l'enregistrement des données.");
   }
 };
 
-// Update the resetSurvey function
+// Update the resetSurvey function - this is called AFTER the survey is saved
 const resetSurvey = () => {
+  console.log("RESETTING SURVEY - clearing answers");
+
   currentStep.value = "start";
   startDate.value = "";
-  answers.value = { Q1: persistentQ1.value };
-  currentQuestionIndex.value = 1; // Start from Q2
+
+  // Clear answers ONLY when explicitly resetting the survey - not during save
+  answers.value = {};
+
+  currentQuestionIndex.value = 0; // Start from first question
   isSurveyComplete.value = false;
+  modeSelections.value = {}; // Clear mode selections
+  communeSelections.value = {}; // Clear commune selections
+  postalCodePrefixes.value = {}; // Clear postal code prefixes
+  questionPath.value = ["Q1"]; // Reset the question path
 };
 
 const getDocCount = async () => {
@@ -514,6 +718,26 @@ const getNextId = async () => {
 
   return `T10-${counter.toString().padStart(6, "0")}`;
 };
+
+// Add a watch to debug the answers object
+watch(
+  answers,
+  (newAnswers, oldAnswers) => {
+    console.log("Answers changed:", JSON.stringify(newAnswers, null, 2));
+
+    // Check if answers are being cleared
+    if (
+      Object.keys(oldAnswers).length > 0 &&
+      Object.keys(newAnswers).length === 0
+    ) {
+      console.error(
+        "ANSWERS WERE CLEARED! Previous stack trace:",
+        new Error().stack
+      );
+    }
+  },
+  { deep: true }
+);
 </script>
 
 
