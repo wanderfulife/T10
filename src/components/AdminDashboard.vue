@@ -33,12 +33,19 @@
           </div>
           <div class="dashboard-card">
             <h3>Enquêtes par Enquêteur</h3>
-            <ul>
-              <li v-for="(data, name) in enqueteurData" :key="name">
-                <span>{{ name }} - {{ getPosteText(data.poste) }}</span>
-                <span class="count">{{ data.count }}</span>
-              </li>
-            </ul>
+            <div class="enqueteur-list">
+              <div
+                v-for="(data, name) in enqueteurData"
+                :key="name"
+                class="enqueteur-item"
+              >
+                <div class="enqueteur-info">
+                  <div class="enqueteur-name">{{ name }}</div>
+                  <div class="poste-badge">{{ getPosteText(data.poste) }}</div>
+                </div>
+                <div class="count-badge">{{ data.count }}</div>
+              </div>
+            </div>
           </div>
         </div>
         <button @click="downloadData" class="btn-download">
@@ -116,7 +123,7 @@ const fetchDashboardData = async () => {
 
 // Function to get the poste text based on poste ID
 const getPosteText = (posteId) => {
-  if (!posteId) return "(Poste non défini)";
+  if (!posteId) return "(Non défini)";
 
   // Find the poste question
   const posteQuestion = props.questions.find((q) => q.id === "Poste");
@@ -188,44 +195,38 @@ const downloadData = async () => {
   }
 };
 </script>
+
 <style scoped>
 .btn-signin {
-  background-color: #4caf50;
-  color: #ffffff;
+  background-color: #4a69bd;
+  color: white;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 12px 24px;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  font-size: 14px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  transition: opacity 0.3s;
 }
 
 .btn-signin:hover {
-  background-color: #45a049;
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
 }
 
-/* Keep the rest of the styles unchanged */
 .btn-download {
-  background-color: #3498db;
+  background-color: #4a69bd;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 8px 20px;
+  border-radius: 20px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
+  font-size: 14px;
   width: 100%;
   margin-top: 20px;
+  transition: opacity 0.3s;
 }
 
 .btn-download:hover {
-  background-color: #2980b9;
+  opacity: 0.9;
 }
 
 .modal {
@@ -242,8 +243,8 @@ const downloadData = async () => {
 }
 
 .modal-content {
-  background-color: #2c3e50;
-  color: #ecf0f1;
+  background-color: #2a3b63;
+  color: white;
   padding: 20px;
   border-radius: 10px;
   max-width: 500px;
@@ -255,33 +256,31 @@ const downloadData = async () => {
 }
 
 .close {
-  position: fixed;
-  /* Change from absolute to fixed */
+  position: absolute;
   right: 20px;
-  top: 20px;
-  font-size: 28px;
+  top: 15px;
+  font-size: 24px;
   font-weight: bold;
-  color: #bdc3c7;
+  color: #ddd;
   background: none;
   border: none;
   cursor: pointer;
   z-index: 1010;
-  /* Ensure it's above other content */
 }
 
 .close:hover {
-  color: #ecf0f1;
+  color: white;
 }
 
 .dashboard-content {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
 .dashboard-card {
-  background-color: #34495e;
+  background-color: #344675;
   border-radius: 10px;
   padding: 20px;
   flex: 1 1 250px;
@@ -291,54 +290,83 @@ const downloadData = async () => {
 
 .dashboard-card h3 {
   margin-top: 0;
-  color: #3498db;
-}
-
-.dashboard-card ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dashboard-card li {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
+  color: #6dbeff;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: normal;
 }
 
 .big-number {
-  font-size: 3em;
+  font-size: 2.5em;
   font-weight: bold;
-  color: #2ecc71;
+  color: #4fd18b;
   margin: 10px 0;
+  text-align: center;
 }
 
-.count {
+.enqueteur-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.enqueteur-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.enqueteur-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.enqueteur-name {
+  font-weight: normal;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.poste-badge {
+  color: #6dbeff;
+  font-size: 0.8rem;
+}
+
+.count-badge {
+  background-color: #4fd18b;
+  color: #2a3b63;
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 0.85rem;
   font-weight: bold;
-  color: #2ecc71;
 }
 
 .form-control {
   width: 100%;
   padding: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border-radius: 5px;
-  border: 1px solid #7f8c8d;
-  background-color: #2c3e50;
-  color: #ecf0f1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
   box-sizing: border-box;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
   .dashboard-card {
     flex: 1 1 100%;
     min-width: 100%;
-  }
-
-  .btn-signin,
-  .btn-download {
-    padding: 10px 15px;
-    font-size: 14px;
   }
 
   .modal-content {
@@ -348,18 +376,16 @@ const downloadData = async () => {
 }
 
 @media (max-width: 480px) {
-  .close {
-    right: 10px;
-    top: 10px;
-    font-size: 24px;
-  }
-
   .dashboard-content {
     gap: 10px;
   }
 
   .dashboard-card {
     padding: 15px;
+  }
+
+  .enqueteur-item {
+    padding: 8px 10px;
   }
 }
 </style>
