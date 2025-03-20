@@ -72,40 +72,11 @@
 
           <!-- Mode Selector -->
           <div v-else-if="currentQuestion.usesModeSelector">
-            <ModeSelector v-model="modeSelections[currentQuestion.id]" />
-            <div
-              v-if="modeSelections[currentQuestion.id]"
-              class="selection-summary"
-            >
-              <div
-                v-if="modeSelections[currentQuestion.id].mode"
-                class="selection-item"
-              >
-                <span class="selection-label">Mode:</span>
-                {{ modeSelections[currentQuestion.id].mode }}
-              </div>
-              <div
-                v-if="modeSelections[currentQuestion.id].line"
-                class="selection-item"
-              >
-                <span class="selection-label">Ligne:</span>
-                {{ modeSelections[currentQuestion.id].line }}
-              </div>
-              <div
-                v-if="modeSelections[currentQuestion.id].departureStation"
-                class="selection-item"
-              >
-                <span class="selection-label">Station de montée:</span>
-                {{ modeSelections[currentQuestion.id].departureStation.name }}
-              </div>
-              <div
-                v-if="modeSelections[currentQuestion.id].arrivalStation"
-                class="selection-item"
-              >
-                <span class="selection-label">Station de descente:</span>
-                {{ modeSelections[currentQuestion.id].arrivalStation.name }}
-              </div>
-            </div>
+            <ModeSelector
+              v-model="modeSelections[currentQuestion.id]"
+              :prefillDepartureStation="getPreviousModeArrivalStation()"
+            />
+            <!-- This summary is shown inside ModeSelector component, so we don't need to duplicate it here -->
             <button
               @click="handleModeSelection"
               class="btn-next"
@@ -181,6 +152,26 @@
             >
               {{ isLastQuestion ? "Terminer" : "Suivant" }}
             </button>
+          </div>
+
+          <!-- Display for mode questions with correspondence -->
+          <div
+            v-if="
+              currentQuestion.value &&
+              currentQuestion.value.usesModeSelector &&
+              getPreviousModeArrivalStation()
+            "
+          >
+            <div class="correspondence-notice">
+              <span class="correspondence-icon">↳</span>
+              <span class="correspondence-text">
+                Correspondance à
+                <strong>{{ getPreviousModeArrivalStation().name }}</strong>
+                <span class="correspondence-subtitle"
+                  >Sélectionnez votre nouveau mode de transport</span
+                >
+              </span>
+            </div>
           </div>
 
           <!-- Back Button -->
@@ -794,6 +785,141 @@ watch(currentQuestion, (newQuestion) => {
     }
   }
 });
+
+// Add the method to get the previous mode's arrival station
+const getPreviousModeArrivalStation = () => {
+  if (currentQuestion.value && currentQuestion.value.usesModeSelector) {
+    const currentId = currentQuestion.value.id;
+    console.log(`Looking for previous station for: ${currentId}`);
+
+    // Skip prefilling for first questions in sequence
+    if (
+      currentId === "Q7M-1" ||
+      currentId === "Q16" ||
+      currentId === "Q7+1" ||
+      currentId === "Q7M+1"
+    ) {
+      console.log(
+        `First question in sequence, no prefill needed: ${currentId}`
+      );
+      return null;
+    }
+
+    // CRITICAL: Handle sequential transport modes in specific question sequences
+
+    // For Q7M-n questions (e.g., Q7M-2, Q7M-3)
+    if (currentId.match(/^Q7M-(\d+)$/)) {
+      // Get the question number (e.g., 2 from Q7M-2)
+      const questionNumber = parseInt(currentId.match(/^Q7M-(\d+)$/)[1]);
+
+      // Calculate the previous question ID
+      const prevNumber = questionNumber - 1;
+      const prevId = `Q7M-${prevNumber}`;
+
+      console.log(
+        `Sequential M- question ${currentId}, checking previous question ${prevId}`
+      );
+
+      const prevMode = modeSelections.value[prevId];
+      if (prevMode && prevMode.arrivalStation) {
+        console.log(
+          `CORRESPONDENCE: Using station from ${prevId}: ${prevMode.arrivalStation.name}`
+        );
+        return prevMode.arrivalStation;
+      }
+    }
+
+    // For Q7M+n questions (e.g., Q7M+2, Q7M+3)
+    if (currentId.match(/^Q7M\+(\d+)$/)) {
+      // Get the question number (e.g., 2 from Q7M+2)
+      const questionNumber = parseInt(currentId.match(/^Q7M\+(\d+)$/)[1]);
+
+      // Calculate the previous question ID
+      const prevNumber = questionNumber - 1;
+      const prevId = prevNumber === 0 ? "Q7M" : `Q7M+${prevNumber}`;
+
+      console.log(
+        `Sequential Q7M+ question ${currentId}, checking previous question ${prevId}`
+      );
+
+      const prevMode = modeSelections.value[prevId];
+      if (prevMode && prevMode.arrivalStation) {
+        console.log(
+          `CORRESPONDENCE: Using station from ${prevId}: ${prevMode.arrivalStation.name}`
+        );
+        return prevMode.arrivalStation;
+      }
+    }
+
+    // For Q7+n questions (e.g., Q7+2, Q7+3)
+    if (currentId.match(/^Q7\+(\d+)$/)) {
+      // Get the question number (e.g., 2 from Q7+2)
+      const questionNumber = parseInt(currentId.match(/^Q7\+(\d+)$/)[1]);
+
+      // Calculate the previous question ID
+      const prevNumber = questionNumber - 1;
+      const prevId = prevNumber === 0 ? "Q7" : `Q7+${prevNumber}`;
+
+      console.log(
+        `Sequential Q7+ question ${currentId}, checking previous question ${prevId}`
+      );
+
+      const prevMode = modeSelections.value[prevId];
+      if (prevMode && prevMode.arrivalStation) {
+        console.log(
+          `CORRESPONDENCE: Using station from ${prevId}: ${prevMode.arrivalStation.name}`
+        );
+        return prevMode.arrivalStation;
+      }
+    }
+
+    // For Q16+n questions (e.g., Q16+1, Q16+2)
+    if (currentId.match(/^Q16\+(\d+)$/)) {
+      // Get the question number (e.g., 1 from Q16+1)
+      const questionNumber = parseInt(currentId.match(/^Q16\+(\d+)$/)[1]);
+
+      // Calculate the previous question ID
+      const prevNumber = questionNumber - 1;
+      const prevId = prevNumber === 0 ? "Q16" : `Q16+${prevNumber}`;
+
+      console.log(
+        `Sequential Q16 question ${currentId}, checking previous question ${prevId}`
+      );
+
+      const prevMode = modeSelections.value[prevId];
+      if (prevMode && prevMode.arrivalStation) {
+        console.log(
+          `CORRESPONDENCE: Using station from ${prevId}: ${prevMode.arrivalStation.name}`
+        );
+        return prevMode.arrivalStation;
+      }
+    }
+
+    // For any other case, look at the most recent question path entry
+    const previousQuestionId =
+      questionPath.value[questionPath.value.length - 2];
+    if (previousQuestionId) {
+      console.log(
+        `Checking immediate previous question: ${previousQuestionId}`
+      );
+      const prevSelection = modeSelections.value[previousQuestionId];
+
+      if (prevSelection && prevSelection.arrivalStation) {
+        console.log(
+          `Using arrival station from ${previousQuestionId}: ${prevSelection.arrivalStation.name}`
+        );
+        return prevSelection.arrivalStation;
+      }
+    }
+
+    // If nothing found, log it clearly
+    console.log(
+      `No arrival station found in previous questions for ${currentId}`
+    );
+  }
+
+  return null;
+};
 </script>
 
 
@@ -1099,5 +1225,38 @@ h2 {
     margin: 5px 0;
     font-size: 15px;
   }
+}
+
+.correspondence-notice {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 0 0 15px 0;
+  text-align: center;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.correspondence-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.correspondence-text {
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.correspondence-subtitle {
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 5px;
+  opacity: 0.9;
 }
 </style>
