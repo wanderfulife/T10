@@ -1,6 +1,6 @@
 export const questions = [
 	{
-		id: "Q1_montee",
+		id: "Poste",
 		text: "Station de montée",
 		options: [
 			{ id: 1, text: "Jardin Parisien", next: "Q1_descente" },
@@ -347,7 +347,7 @@ export const questions = [
 		id: "Q15a",
 		text: "Pourquoi avez-vous abandonné votre véhicule personnel ?",
 		options: [
-			{ id: 1, text: "Le prolongement de la ligne T10", next: "Q15b" },
+			{ id: 1, text: "Depuis la création de la ligne T10", next: "Q15b" },
 			{ id: 2, text: "Coût élevé du véhicule", next: "Q15b" },
 			{ id: 3, text: "Difficulté de circulation", next: "Q15b" },
 			{ id: 4, text: "Difficulté de stationnement", next: "Q15b" },
@@ -358,7 +358,7 @@ export const questions = [
 	},
 	{
 		id: "Q15b",
-		text: "Pour ce déplacement il y a deux ans, combien de km parcouriez- vous ?",
+		text: "Pour ce déplacement il y a deux ans, combien de km parcouriez-vous ?",
 		freeText: true,
 		next: "Q17"
 	},

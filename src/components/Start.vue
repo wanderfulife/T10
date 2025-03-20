@@ -223,6 +223,7 @@ import AdminDashboard from "./AdminDashboard.vue";
 
 // Refs
 const persistentQ1 = ref(null);
+const persistentPoste = ref(null);
 const docCount = ref(0);
 const currentStep = ref("enqueteur");
 const startDate = ref("");
@@ -415,6 +416,15 @@ const logAnswers = () => {
 const selectAnswer = (option) => {
   if (currentQuestion.value) {
     answers.value[currentQuestion.value.id] = option.id;
+
+    // Store the Poste answer if it's the first one and hasn't been set yet
+    if (
+      currentQuestion.value.id === "Poste" &&
+      persistentPoste.value === null
+    ) {
+      persistentPoste.value = option.id;
+      console.log("Poste value saved permanently:", persistentPoste.value);
+    }
 
     if (option.next === "end") {
       finishSurvey();
@@ -711,6 +721,11 @@ const resetSurvey = () => {
   // Clear answers ONLY when explicitly resetting the survey - not during save
   answers.value = {};
 
+  // Pre-set the Poste answer if it has been saved
+  if (persistentPoste.value !== null) {
+    answers.value["Poste"] = persistentPoste.value;
+  }
+
   currentQuestionIndex.value = 0; // Start from first question
   isSurveyComplete.value = false;
   modeSelections.value = {}; // Clear mode selections
@@ -760,6 +775,25 @@ watch(
   },
   { deep: true }
 );
+
+// Add a watch to automatically select Poste if persistentPoste is set
+watch(currentQuestion, (newQuestion) => {
+  if (
+    newQuestion &&
+    newQuestion.id === "Poste" &&
+    persistentPoste.value !== null
+  ) {
+    // Find the option that matches the saved Poste value
+    const savedOption = newQuestion.options.find(
+      (opt) => opt.id === persistentPoste.value
+    );
+    if (savedOption) {
+      // Automatically select this option
+      console.log("Auto-selecting saved Poste:", savedOption.text);
+      selectAnswer(savedOption);
+    }
+  }
+});
 </script>
 
 

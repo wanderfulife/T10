@@ -34,9 +34,9 @@
           <div class="dashboard-card">
             <h3>Enquêtes par Enquêteur</h3>
             <ul>
-              <li v-for="(count, name) in surveysByEnqueteur" :key="name">
-                <span>{{ name }}</span>
-                <span class="count">{{ count }}</span>
+              <li v-for="(data, name) in enqueteurData" :key="name">
+                <span>{{ name }} - {{ getPosteText(data.poste) }}</span>
+                <span class="count">{{ data.count }}</span>
               </li>
             </ul>
           </div>
@@ -66,7 +66,7 @@ const showSignInModal = ref(false);
 const showAdminDashboard = ref(false);
 const password = ref("");
 const totalSurveys = ref(0);
-const surveysByEnqueteur = ref({});
+const enqueteurData = ref({});
 const surveysByType = ref({});
 
 const surveyCollectionRef = collection(db, "T10");
@@ -86,23 +86,45 @@ const fetchDashboardData = async () => {
   const querySnapshot = await getDocs(surveyCollectionRef);
   totalSurveys.value = querySnapshot.size;
 
-  const enqueteurCounts = {};
+  const enqueteurInfo = {};
   const typeCounts = {};
 
   querySnapshot.forEach((doc) => {
     const data = doc.data();
 
-    // Count by enqueteur
+    // Count by enqueteur and store Poste
     const enqueteur = data.ENQUETEUR || "Unknown";
-    enqueteurCounts[enqueteur] = (enqueteurCounts[enqueteur] || 0) + 1;
+    const poste = data.Poste || null;
+
+    if (!enqueteurInfo[enqueteur]) {
+      enqueteurInfo[enqueteur] = { count: 0, poste: poste };
+    }
+    enqueteurInfo[enqueteur].count += 1;
+    // Keep the poste value if it exists
+    if (poste && !enqueteurInfo[enqueteur].poste) {
+      enqueteurInfo[enqueteur].poste = poste;
+    }
 
     // Count by type (assuming Q1 represents the type)
     const type = data.Q1 || "Unknown";
     typeCounts[type] = (typeCounts[type] || 0) + 1;
   });
 
-  surveysByEnqueteur.value = enqueteurCounts;
+  enqueteurData.value = enqueteurInfo;
   surveysByType.value = typeCounts;
+};
+
+// Function to get the poste text based on poste ID
+const getPosteText = (posteId) => {
+  if (!posteId) return "(Poste non défini)";
+
+  // Find the poste question
+  const posteQuestion = props.questions.find((q) => q.id === "Poste");
+  if (!posteQuestion || !posteQuestion.options) return `Poste ${posteId}`;
+
+  // Find the matching option text
+  const option = posteQuestion.options.find((opt) => opt.id === posteId);
+  return option ? option.text : `Poste ${posteId}`;
 };
 
 const downloadData = async () => {
