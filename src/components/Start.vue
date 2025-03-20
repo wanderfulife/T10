@@ -215,6 +215,7 @@ import AdminDashboard from "./AdminDashboard.vue";
 // Refs
 const persistentQ1 = ref(null);
 const persistentPoste = ref(null);
+const persistentSens = ref(null);
 const docCount = ref(0);
 const currentStep = ref("enqueteur");
 const startDate = ref("");
@@ -386,11 +387,13 @@ const setEnqueteur = () => {
 };
 
 const startSurvey = () => {
+  // Ensure we always set the start time when beginning a survey
   startDate.value = new Date().toLocaleTimeString("fr-FR", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
   });
+  console.log("Survey started at:", startDate.value); // Add logging for debugging
   currentStep.value = "survey";
   currentQuestionIndex.value = 0; // Start from first question
   isSurveyComplete.value = false;
@@ -415,6 +418,12 @@ const selectAnswer = (option) => {
     ) {
       persistentPoste.value = option.id;
       console.log("Poste value saved permanently:", persistentPoste.value);
+    }
+
+    // Store the Sens answer if it's the first one and hasn't been set yet
+    if (currentQuestion.value.id === "Sens" && persistentSens.value === null) {
+      persistentSens.value = option.id;
+      console.log("Sens value saved permanently:", persistentSens.value);
     }
 
     if (option.next === "end") {
@@ -659,6 +668,12 @@ const finishSurvey = async () => {
       }),
     };
 
+    console.log(
+      "Survey metadata being saved:",
+      JSON.stringify(metadata, null, 2)
+    );
+    console.log("HEURE_DEBUT value:", startDate.value);
+
     // IMPORTANT: Use our deep copy of answers that cannot be modified
     const dataToSave = { ...metadata, ...answersCopy };
 
@@ -707,7 +722,9 @@ const resetSurvey = () => {
   console.log("RESETTING SURVEY - clearing answers");
 
   currentStep.value = "start";
-  startDate.value = "";
+
+  // We should NOT clear startDate here, as it records when the previous survey started
+  // Instead, we'll set a new startDate in startSurvey when the next survey begins
 
   // Clear answers ONLY when explicitly resetting the survey - not during save
   answers.value = {};
@@ -715,6 +732,11 @@ const resetSurvey = () => {
   // Pre-set the Poste answer if it has been saved
   if (persistentPoste.value !== null) {
     answers.value["Poste"] = persistentPoste.value;
+  }
+
+  // Pre-set the Sens answer if it has been saved
+  if (persistentSens.value !== null) {
+    answers.value["Sens"] = persistentSens.value;
   }
 
   currentQuestionIndex.value = 0; // Start from first question
@@ -781,6 +803,23 @@ watch(currentQuestion, (newQuestion) => {
     if (savedOption) {
       // Automatically select this option
       console.log("Auto-selecting saved Poste:", savedOption.text);
+      selectAnswer(savedOption);
+    }
+  }
+
+  // Auto-select Sens if persistentSens is set
+  if (
+    newQuestion &&
+    newQuestion.id === "Sens" &&
+    persistentSens.value !== null
+  ) {
+    // Find the option that matches the saved Sens value
+    const savedOption = newQuestion.options.find(
+      (opt) => opt.id === persistentSens.value
+    );
+    if (savedOption) {
+      // Automatically select this option
+      console.log("Auto-selecting saved Sens:", savedOption.text);
       selectAnswer(savedOption);
     }
   }

@@ -3,46 +3,46 @@ export const questions = [
 		id: "Poste",
 		text: "Station de montée",
 		options: [
-			{ id: 1, text: "Jardin Parisien", next: "Q1_descente" },
-			{ id: 2, text: "Hôpital Béclère", next: "Q1_descente" },
-			{ id: 3, text: "Le Hameau", next: "Q1_descente" },
-			{ id: 4, text: "Parc des Sports", next: "Q1_descente" },
-			{ id: 5, text: "Noveos", next: "Q1_descente" },
-			{ id: 6, text: "Malabry", next: "Q1_descente" },
-			{ id: 7, text: "Vallée aux Loups", next: "Q1_descente" },
-			{ id: 8, text: "Cité Jardin", next: "Q1_descente" },
-			{ id: 9, text: "Les Peintres", next: "Q1_descente" },
-			{ id: 10, text: "Théâtre La Piscine", next: "Q1_descente" },
-			{ id: 11, text: "Petit Châtenay", next: "Q1_descente" },
-			{ id: 12, text: "LaVallée", next: "Q1_descente" },
-			{ id: 13, text: "La Croix de Berny", next: "Q1_descente" }
+			{ id: 1, text: "Jardin Parisien", next: "Sens" },
+			{ id: 2, text: "Hôpital Béclère", next: "Sens" },
+			{ id: 3, text: "Le Hameau", next: "Sens" },
+			{ id: 4, text: "Parc des Sports", next: "Sens" },
+			{ id: 5, text: "Noveos", next: "Sens" },
+			{ id: 6, text: "Malabry", next: "Sens" },
+			{ id: 7, text: "Vallée aux Loups", next: "Sens" },
+			{ id: 8, text: "Cité Jardin", next: "Sens" },
+			{ id: 9, text: "Les Peintres", next: "Sens" },
+			{ id: 10, text: "Théâtre La Piscine", next: "Sens" },
+			{ id: 11, text: "Petit Châtenay", next: "Sens" },
+			{ id: 12, text: "LaVallée", next: "Sens" },
+			{ id: 13, text: "La Croix de Berny", next: "Sens" }
+		]
+	},
+	{
+		id: "Sens",
+		text: "Sens",
+		options: [
+			{ id: 1, text: "La Croix de Berny", next: "Q1_descente" },
+			{ id: 2, text: "Vers Jardin Parisien", next: "Q1_descente" }
 		]
 	},
 	{
 		id: "Q1_descente",
 		text: "Station de descente",
 		options: [
-			{ id: 1, text: "Jardin Parisien", next: "Q2" },
-			{ id: 2, text: "Hôpital Béclère", next: "Q2" },
-			{ id: 3, text: "Le Hameau", next: "Q2" },
-			{ id: 4, text: "Parc des Sports", next: "Q2" },
-			{ id: 5, text: "Noveos", next: "Q2" },
-			{ id: 6, text: "Malabry", next: "Q2" },
-			{ id: 7, text: "Vallée aux Loups", next: "Q2" },
-			{ id: 8, text: "Cité Jardin", next: "Q2" },
-			{ id: 9, text: "Les Peintres", next: "Q2" },
-			{ id: 10, text: "Théâtre La Piscine", next: "Q2" },
-			{ id: 11, text: "Petit Châtenay", next: "Q2" },
-			{ id: 12, text: "LaVallée", next: "Q2" },
-			{ id: 13, text: "La Croix de Berny", next: "Q2" }
-		]
-	},
-	{
-		id: "Q2",
-		text: "Sens",
-		options: [
-			{ id: 1, text: "La Croix de Berny", next: "Q3" },
-			{ id: 2, text: "Vers Jardin Parisien", next: "Q3" }
+			{ id: 1, text: "Jardin Parisien", next: "Q3" },
+			{ id: 2, text: "Hôpital Béclère", next: "Q3" },
+			{ id: 3, text: "Le Hameau", next: "Q3" },
+			{ id: 4, text: "Parc des Sports", next: "Q3" },
+			{ id: 5, text: "Noveos", next: "Q3" },
+			{ id: 6, text: "Malabry", next: "Q3" },
+			{ id: 7, text: "Vallée aux Loups", next: "Q3" },
+			{ id: 8, text: "Cité Jardin", next: "Q3" },
+			{ id: 9, text: "Les Peintres", next: "Q3" },
+			{ id: 10, text: "Théâtre La Piscine", next: "Q3" },
+			{ id: 11, text: "Petit Châtenay", next: "Q3" },
+			{ id: 12, text: "LaVallée", next: "Q3" },
+			{ id: 13, text: "La Croix de Berny", next: "Q3" }
 		]
 	},
 	{

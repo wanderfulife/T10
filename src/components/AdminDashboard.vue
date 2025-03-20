@@ -171,10 +171,20 @@ const downloadData = async () => {
 
     const data = querySnapshot.docs.map((doc) => {
       const docData = doc.data();
+      // Log each document to check for HEURE_DEBUT
+      console.log("Processing document", docData.ID_questionnaire);
+      console.log("HEURE_DEBUT value:", docData.HEURE_DEBUT);
+
       return headerOrder.reduce((acc, key) => {
         acc[key] = docData[key] !== undefined ? docData[key] : "";
         return acc;
       }, {});
+    });
+
+    console.log("Excel data prepared:", data.length, "rows");
+    // Log the first few records to check HEURE_DEBUT
+    data.slice(0, 3).forEach((record, index) => {
+      console.log(`Record ${index} HEURE_DEBUT:`, record.HEURE_DEBUT);
     });
 
     const worksheet = XLSX.utils.json_to_sheet(data, { header: headerOrder });
