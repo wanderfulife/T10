@@ -41,7 +41,22 @@
               >
                 <div class="enqueteur-info">
                   <div class="enqueteur-name">{{ name }}</div>
-                  <div class="poste-badge">{{ getPosteText(data.poste) }}</div>
+                  <div class="badge-row">
+                    <span class="badge-label">Poste:</span>
+                    <span class="poste-badge">{{
+                      getPosteText(data.poste)
+                    }}</span>
+                  </div>
+                  <div class="badge-row">
+                    <span class="badge-label">Sens:</span>
+                    <span class="sens-badge">{{ getSensText(data.sens) }}</span>
+                  </div>
+                  <div class="badge-row">
+                    <span class="badge-label">Jour:</span>
+                    <span class="jour-badge">{{
+                      data.jour || "Non défini"
+                    }}</span>
+                  </div>
                 </div>
                 <div class="count-badge">{{ data.count }}</div>
               </div>
@@ -102,14 +117,29 @@ const fetchDashboardData = async () => {
     // Count by enqueteur and store Poste
     const enqueteur = data.ENQUETEUR || "Unknown";
     const poste = data.Poste || null;
+    const sens = data.Sens || null;
+    const jour = data.JOUR || null;
 
     if (!enqueteurInfo[enqueteur]) {
-      enqueteurInfo[enqueteur] = { count: 0, poste: poste };
+      enqueteurInfo[enqueteur] = {
+        count: 0,
+        poste: poste,
+        sens: sens,
+        jour: jour,
+      };
     }
     enqueteurInfo[enqueteur].count += 1;
     // Keep the poste value if it exists
     if (poste && !enqueteurInfo[enqueteur].poste) {
       enqueteurInfo[enqueteur].poste = poste;
+    }
+    // Keep the sens value if it exists
+    if (sens && !enqueteurInfo[enqueteur].sens) {
+      enqueteurInfo[enqueteur].sens = sens;
+    }
+    // Keep the day value if it exists
+    if (jour && !enqueteurInfo[enqueteur].jour) {
+      enqueteurInfo[enqueteur].jour = jour;
     }
 
     // Count by type (assuming Q1 represents the type)
@@ -132,6 +162,19 @@ const getPosteText = (posteId) => {
   // Find the matching option text
   const option = posteQuestion.options.find((opt) => opt.id === posteId);
   return option ? option.text : `Poste ${posteId}`;
+};
+
+// Function to get the sens text based on sens ID
+const getSensText = (sensId) => {
+  if (!sensId) return "(Sens non défini)";
+
+  // Find the sens question
+  const sensQuestion = props.questions.find((q) => q.id === "Sens");
+  if (!sensQuestion || !sensQuestion.options) return `Sens ${sensId}`;
+
+  // Find the matching option text
+  const option = sensQuestion.options.find((opt) => opt.id === sensId);
+  return option ? option.text : `Sens ${sensId}`;
 };
 
 const downloadData = async () => {
@@ -326,39 +369,62 @@ const downloadData = async () => {
 .enqueteur-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 15px;
+  align-items: flex-start;
+  padding: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  margin-bottom: 5px;
 }
 
 .enqueteur-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  width: calc(100% - 40px);
+}
+
+.badge-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-label {
+  font-size: 0.75rem;
+  color: #a0b3d8;
+  min-width: 40px;
 }
 
 .enqueteur-name {
-  font-weight: normal;
+  font-weight: bold;
   color: white;
   font-size: 0.95rem;
+  margin-bottom: 2px;
 }
 
-.poste-badge {
+.poste-badge,
+.sens-badge,
+.jour-badge {
   color: #6dbeff;
   font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .count-badge {
   background-color: #4fd18b;
   color: #2a3b63;
-  display: inline-block;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
-  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 30px;
+  height: 30px;
   border-radius: 50%;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: bold;
+  align-self: center;
 }
 
 .form-control {
@@ -382,6 +448,11 @@ const downloadData = async () => {
   .modal-content {
     padding: 15px;
     width: 95%;
+    max-width: 100%;
+  }
+
+  .enqueteur-info {
+    width: calc(100% - 35px);
   }
 }
 
@@ -395,7 +466,17 @@ const downloadData = async () => {
   }
 
   .enqueteur-item {
-    padding: 8px 10px;
+    padding: 12px 10px;
+  }
+
+  .badge-row {
+    width: 100%;
+  }
+
+  .poste-badge,
+  .sens-badge,
+  .jour-badge {
+    max-width: calc(100% - 50px);
   }
 }
 </style>
