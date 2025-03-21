@@ -125,7 +125,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M-1",
-		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordr tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M-2Q"
 	},
@@ -139,7 +139,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M-2",
-		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M-3Q"
 	},
@@ -153,7 +153,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M-3",
-		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M+1Q"
 	},
@@ -167,7 +167,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M+1",
-		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M+2Q"
 	},
@@ -181,7 +181,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M+2",
-		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q7M+3Q"
 	},
@@ -195,7 +195,7 @@ export const questions = [
 	},
 	{
 		id: "Q7M+3",
-		text: "Citer dans l'ordre (départ -> arrivée) tous les modes de transports utilisés pour réaliser ce déplacement :",
+		text: "Citer dans l'ordre tous les modes de transports utilisés pour réaliser ce déplacement :",
 		usesModeSelector: true,
 		next: "Q8"
 	},
@@ -451,10 +451,22 @@ export const questions = [
 		id: "Q18",
 		text: "Par rapport à il y a 2 ans, estimez-vous avoir gagné du temps pour réaliser ce même déplacement aujourd'hui ?",
 		options: [
-			{ id: 1, text: "Oui, gagné", subtext: "____ minutes", next: "end" },
-			{ id: 2, text: "Non, perdu", subtext: "____ minutes", next: "end" },
+			{ id: 1, text: "Oui, gagné", next: "Q18_1" },
+			{ id: 2, text: "Non, perdu", subtext: "____ minutes", next: "Q18_2" },
 			{ id: 3, text: "Temps équivalent", next: "end" },
 			{ id: 4, text: "Sans réponse/NC", next: "end" }
 		]
 	},
+	{
+		id: "Q18_1",
+		text: "Quel est le temps de trajet gagné en minutes ?",
+		freeText: true,
+		next: "end"
+	},
+	{
+		id: "Q18_2",
+		text: "Quel est le temps de trajet perdu en minutes ?",
+		freeText: true,
+		next: "end"
+	}
 ];

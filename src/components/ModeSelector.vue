@@ -2,25 +2,28 @@
 <template>
   <div class="form-group">
     <!-- Correspondence Banner -->
-    <div v-if="props.prefillDepartureStation" class="correspondence-banner">
+    <div
+      v-if="props.prefillDepartureStation && !props.prefillArrivalStation"
+      class="correspondence-banner"
+    >
       <div class="banner-content">
         <span class="banner-icon">↳</span>
         <span class="banner-text">
-          Correspondance à
+          Départ depuis
           <strong>{{ props.prefillDepartureStation.name }}</strong>
         </span>
-        <span class="banner-subtitle">
-          Cette station est fixée comme point de départ, mais peut avoir un nom
-          différent selon le mode.
-          <br v-if="step === 1" />
-          <span v-if="step === 1">Sélectionnez votre mode de transport</span>
-          <span v-else-if="step === 2">Sélectionnez votre ligne</span>
-          <span v-else-if="step === 3"
-            >Sélectionnez votre station de départ</span
-          >
-          <span v-else-if="step === 4"
-            >Sélectionnez votre station d'arrivée</span
-          >
+      </div>
+    </div>
+
+    <!-- Prefilled Arrival Station Banner for Q7M- -->
+    <div v-if="props.prefillArrivalStation" class="arrival-banner">
+      <div class="banner-content">
+        <span class="banner-icon">↩</span>
+        <span class="banner-text">
+          Arrivée à <strong>{{ props.prefillArrivalStation.name }}</strong>
+          <span class="banner-subtitle">
+            Sélectionner uniquement votre station de montée
+          </span>
         </span>
       </div>
     </div>
@@ -57,11 +60,17 @@
         type="text"
         v-model="busLineInput"
         placeholder="Nom ou numéro de la ligne"
-        @input="updateBusLine"
       />
-      <button @click="step = 1" class="btn btn-secondary btn-sm mt-2">
-        Retour
-      </button>
+      <div class="button-group">
+        <button
+          @click="selectBusLine"
+          class="btn btn-primary"
+          :disabled="!busLineInput.trim()"
+        >
+          Valider
+        </button>
+        <button @click="step = 1" class="btn btn-secondary">Retour</button>
+      </div>
     </div>
 
     <!-- Line Selection (for standard modes) -->
@@ -84,15 +93,13 @@
 
     <!-- Departure Station Selection -->
     <div v-if="step === 3">
-      <label class="form-label">
-        Station de montée
-        <span v-if="props.prefillDepartureStation" class="connection-label">
-          (Correspondance)
-        </span>
-      </label>
+      <label class="form-label"> Station de montée </label>
 
       <!-- Prefill indicator message for correspondence station -->
-      <div v-if="props.prefillDepartureStation" class="prefill-indicator">
+      <div
+        v-if="props.prefillDepartureStation && !props.prefillArrivalStation"
+        class="prefill-indicator"
+      >
         <div class="prefill-message">
           <span class="prefill-icon">↳</span>
           Correspondance:
@@ -106,7 +113,7 @@
         type="text"
         v-model="departureSearch"
         @input="filterStations"
-        placeholder="Rechercher une station"
+        placeholder="Rechercher une station de montée"
       />
       <div v-if="filteredStations.length > 0" class="station-dropdown">
         <div
@@ -130,8 +137,11 @@
     <!-- Arrival Station Selection -->
     <div v-if="step === 4">
       <label class="form-label">
-        Station de descente
-        <span v-if="departureStation" class="from-label">
+        <span>Station de descente</span>
+        <span
+          v-if="departureStation && !props.prefillArrivalStation"
+          class="from-label"
+        >
           (Depuis {{ departureStation.name }})
         </span>
       </label>
@@ -151,12 +161,26 @@
         </div>
       </div>
 
+      <!-- Special notice when prefilled arrival appears to be the same as departure (Q7M-) -->
+      <div v-if="false" class="prefill-indicator arrival-warning">
+        <div class="prefill-message">
+          <span class="prefill-icon">⚠️</span>
+          La station de montée sélectionnée (<strong>{{
+            departureStation.name
+          }}</strong
+          >) est la même que la station préréglée (<strong>{{
+            props.prefillArrivalStation.name
+          }}</strong
+          >). Veuillez sélectionner une station de descente différente.
+        </div>
+      </div>
+
       <input
         class="form-control"
         type="text"
         v-model="arrivalSearch"
         @input="filterArrivalStations"
-        placeholder="Rechercher une station"
+        placeholder="Rechercher une station de descente"
       />
       <div v-if="filteredArrivalStations.length > 0" class="station-dropdown">
         <div
@@ -164,8 +188,15 @@
           :key="station.key"
           @click="selectArrivalStation(station)"
           class="station-option"
+          :class="{ 'prefilled-station': isPrefillArrival(station) }"
         >
           {{ station.name }}
+          <span
+            v-if="isPrefillArrival(station)"
+            class="prefill-tag arrival-tag"
+          >
+            Station d'arrivée
+          </span>
         </div>
       </div>
       <button @click="step = 3" class="btn btn-secondary btn-sm mt-2">
@@ -192,6 +223,15 @@
         <div class="selection-item">
           <span class="selection-label">Station de descente:</span>
           {{ arrivalStation.name }}
+          <span
+            v-if="
+              props.prefillArrivalStation &&
+              stationMatches(props.prefillArrivalStation, arrivalStation)
+            "
+            class="arrival-tag"
+          >
+            (Station d'arrivée)
+          </span>
         </div>
         <button @click="step = 4" class="btn btn-secondary btn-sm mt-2">
           Modifier
@@ -252,6 +292,7 @@ const stationMatches = (station1, station2) => {
 const props = defineProps({
   modelValue: Object,
   prefillDepartureStation: Object,
+  prefillArrivalStation: Object,
   additionalMode: Boolean,
 });
 
@@ -332,6 +373,13 @@ const availableLines = computed(() => {
 
 // Methods
 const selectMode = (mode) => {
+  console.log("Selecting mode:", mode);
+  if (props.prefillArrivalStation) {
+    console.log(
+      "We have a prefilled arrival station:",
+      props.prefillArrivalStation.name
+    );
+  }
   selectedMode.value = mode;
   isAdditionalMode.value = false;
   step.value = 2;
@@ -350,6 +398,11 @@ const selectAdditionalMode = (mode) => {
   if (mode === "Bus") {
     busLineInput.value = "";
     step.value = 2;
+
+    // If we have a prefilled arrival station (Q7M- case), set it directly
+    if (props.prefillArrivalStation) {
+      arrivalStation.value = props.prefillArrivalStation;
+    }
   } else {
     // For other additional modes, emit immediately and stay at step 2
     step.value = 2;
@@ -363,15 +416,65 @@ const selectAdditionalMode = (mode) => {
 };
 
 const selectBusLine = () => {
+  console.log("selectBusLine called with value:", busLineInput.value);
   if (busLineInput.value.trim()) {
+    // For Q7M- questions with prefilled arrival
+    if (props.prefillArrivalStation) {
+      arrivalStation.value = props.prefillArrivalStation;
+    }
+
+    // For Q7M+ questions with prefilled departure
+    if (props.prefillDepartureStation) {
+      departureStation.value = props.prefillDepartureStation;
+    }
+
     step.value = 5;
     updateModelValue();
+    console.log("Bus line selected and model updated:", busLineInput.value);
   }
 };
 
 const selectLine = (line) => {
   console.log(`Selecting line: ${line}`);
   selectedLine.value = line;
+
+  // Special handling for Q7M- questions with prefilled arrival
+  if (props.prefillArrivalStation) {
+    const stationsForLine = selectedLineStations.value;
+
+    // If no stations, just go to station selection
+    if (!stationsForLine || stationsForLine.length === 0) {
+      console.log(`No stations available for line ${line}, continuing anyway`);
+      step.value = 3;
+      return;
+    }
+
+    // Try to find the matching arrival station in this line
+    const matchingArrivalStation = stationsForLine.find((station) => {
+      try {
+        return stationMatches(station, props.prefillArrivalStation);
+      } catch (e) {
+        return station.name === props.prefillArrivalStation.name;
+      }
+    });
+
+    // Even if we don't find a matching station, don't block the user from proceeding
+    if (matchingArrivalStation) {
+      console.log(
+        `Found arrival station ${matchingArrivalStation.name} on this line`
+      );
+      arrivalStation.value = matchingArrivalStation;
+    } else {
+      console.log(
+        `Arrival station not found on this line, but continuing anyway`
+      );
+      // We'll handle this later when user selects a departure station
+    }
+
+    // Always proceed to departure station selection
+    step.value = 3;
+    return;
+  }
 
   // If we have a correspondence station, check if this line has the station
   if (props.prefillDepartureStation) {
@@ -402,7 +505,45 @@ const selectLine = (line) => {
 
       // Skip to arrival station selection
       step.value = 4;
-      filterArrivalStations();
+
+      // Log arrival station info
+      if (props.prefillArrivalStation) {
+        console.log(
+          "Q7M-: We have a prefilled arrival station for this Q7M- question:",
+          props.prefillArrivalStation.name
+        );
+      }
+
+      // Special case for Q7M- questions - prefill the arrival station
+      if (props.prefillArrivalStation) {
+        // Check if the prefilled arrival station exists in this line
+        const matchingArrivalStation = stationsForLine.find((station) => {
+          try {
+            return stationMatches(station, props.prefillArrivalStation);
+          } catch (e) {
+            return station.name === props.prefillArrivalStation.name;
+          }
+        });
+
+        // For Q7M-, always use previous departure station as arrival
+        if (matchingArrivalStation) {
+          console.log(
+            `Setting arrival station: ${matchingArrivalStation.name}`
+          );
+          arrivalStation.value = matchingArrivalStation;
+          arrivalSearch.value = matchingArrivalStation.name;
+
+          // Update model and move to final step
+          step.value = 5;
+          updateModelValue();
+        } else {
+          // If arrival station not found in this line, just filter normal options
+          filterArrivalStations();
+        }
+      } else {
+        // Normal flow - just filter arrival stations
+        filterArrivalStations();
+      }
 
       // Update model
       emit("update:modelValue", {
@@ -468,6 +609,51 @@ const filterArrivalStations = () => {
 const selectDepartureStation = (station) => {
   departureStation.value = station;
   departureSearch.value = station.name;
+
+  // For Q7M- questions with prefilled arrival station
+  if (props.prefillArrivalStation) {
+    // If we haven't set the arrival station yet, try to find it in this line
+    if (!arrivalStation.value) {
+      const stationsForLine = selectedLineStations.value;
+      if (stationsForLine && stationsForLine.length > 0) {
+        const matchingArrivalStation = stationsForLine.find((s) => {
+          try {
+            return stationMatches(s, props.prefillArrivalStation);
+          } catch (e) {
+            return s.name === props.prefillArrivalStation.name;
+          }
+        });
+
+        if (matchingArrivalStation) {
+          console.log(
+            `Setting arrival station to ${matchingArrivalStation.name} after departure selected`
+          );
+          arrivalStation.value = matchingArrivalStation;
+        } else {
+          console.log(
+            `Warning: Could not find arrival station ${props.prefillArrivalStation.name} on line ${selectedLine.value}`
+          );
+          // Continue anyway - user will need to select an arrival station
+          step.value = 4;
+          filterArrivalStations();
+          return;
+        }
+      }
+    }
+
+    // If we have both departure and arrival, go to summary
+    if (arrivalStation.value) {
+      step.value = 5;
+      updateModelValue();
+    } else {
+      // Otherwise go to arrival selection
+      step.value = 4;
+      filterArrivalStations();
+    }
+    return;
+  }
+
+  // Normal flow for other questions
   step.value = 4;
   arrivalSearch.value = "";
   filterArrivalStations();
@@ -481,14 +667,32 @@ const selectArrivalStation = (station) => {
 };
 
 const updateModelValue = () => {
+  console.log("updateModelValue called");
   if (isAdditionalMode.value) {
     if (selectedMode.value === "Bus") {
-      emit("update:modelValue", {
-        mode: selectedMode.value,
-        line: busLineInput.value,
-        departureStation: null,
-        arrivalStation: null,
-      });
+      // Special case for Q7M- with Bus mode
+      if (props.prefillArrivalStation) {
+        console.log("Emitting Bus mode with prefilled arrival station:", {
+          mode: selectedMode.value,
+          line: busLineInput.value,
+          arrivalStation: props.prefillArrivalStation.name,
+        });
+        emit("update:modelValue", {
+          mode: selectedMode.value,
+          line: busLineInput.value,
+          departureStation: null,
+          arrivalStation: props.prefillArrivalStation,
+        });
+      } else {
+        // Normal Bus mode
+        console.log("Emitting normal Bus mode with line:", busLineInput.value);
+        emit("update:modelValue", {
+          mode: selectedMode.value,
+          line: busLineInput.value,
+          departureStation: null,
+          arrivalStation: null,
+        });
+      }
     } else {
       emit("update:modelValue", {
         mode: selectedMode.value,
@@ -529,9 +733,97 @@ watch(
 onMounted(() => {
   console.log("ModeSelector mounted:", {
     modelValue: props.modelValue,
-    prefillStation: props.prefillDepartureStation,
-    isAdditionalMode: props.additionalMode,
+    prefillDepartureStation: props.prefillDepartureStation,
+    prefillArrivalStation: props.prefillArrivalStation,
   });
+
+  // If this is a Q7M- question (2+) with a prefilled arrival station, we only need to select the departure
+  if (props.prefillArrivalStation) {
+    console.log("This is a Q7M- question with prefilled arrival station");
+
+    // If we have a model value, use it as a starting point
+    if (props.modelValue) {
+      selectedMode.value = props.modelValue.mode;
+      selectedLine.value = props.modelValue.line;
+
+      // If we have a departure station selected, use it
+      if (props.modelValue.departureStation) {
+        departureStation.value = props.modelValue.departureStation;
+
+        // Use the prefilled arrival station
+        arrivalStation.value = props.prefillArrivalStation;
+
+        // If we have a complete selection, go to summary view
+        if (
+          selectedMode.value &&
+          selectedLine.value &&
+          departureStation.value
+        ) {
+          step.value = 5; // Go directly to summary
+          updateModelValue();
+          return;
+        }
+      }
+    }
+
+    // If we don't have a complete model, go to mode selection
+    step.value = 1;
+    return;
+  }
+
+  // Original initialization code for other cases
+  if (props.prefillDepartureStation && props.prefillArrivalStation) {
+    console.log(
+      "Both departure and arrival stations prefilled - trying to auto-select"
+    );
+
+    // If we already have a modelValue, use its mode and line
+    if (props.modelValue && props.modelValue.mode) {
+      // Use existing selection
+      selectedMode.value = props.modelValue.mode;
+      isAdditionalMode.value = additionalModes.includes(props.modelValue.mode);
+
+      if (props.modelValue.line) {
+        selectedLine.value = props.modelValue.line;
+
+        // Try to find both stations in this line
+        const stationsForLine =
+          filteredStationData.value[selectedMode.value]?.[selectedLine.value]
+            ?.stations || [];
+
+        // Find matching departure station
+        const matchingDepartureStation = stationsForLine.find((station) => {
+          try {
+            return stationMatches(station, props.prefillDepartureStation);
+          } catch (e) {
+            return station.name === props.prefillDepartureStation.name;
+          }
+        });
+
+        // Find matching arrival station
+        const matchingArrivalStation = stationsForLine.find((station) => {
+          try {
+            return stationMatches(station, props.prefillArrivalStation);
+          } catch (e) {
+            return station.name === props.prefillArrivalStation.name;
+          }
+        });
+
+        // If both stations exist in this line, auto-select them
+        if (matchingDepartureStation && matchingArrivalStation) {
+          departureStation.value = matchingDepartureStation;
+          arrivalStation.value = matchingArrivalStation;
+          step.value = 5; // Go straight to summary
+          updateModelValue();
+          return;
+        }
+      }
+    }
+
+    // If we couldn't auto-select, start with mode selection
+    step.value = 1;
+    return;
+  }
 
   // If we already have a modelValue, use it to initialize the component
   if (props.modelValue) {
@@ -649,19 +941,47 @@ const findMatchingStation = (targetStation, availableStations) => {
 
 // Helper function to check if a station is prefilled
 const isPrefilled = (station) => {
-  if (!props.prefillDepartureStation || !station) return false;
+  if (!station) return false;
 
-  try {
-    // Use our enhanced station matching helper with error handling
-    return stationMatches(station, props.prefillDepartureStation);
-  } catch (e) {
-    console.error(
-      "Error in isPrefilled, falling back to direct comparison:",
-      e
-    );
-    // Fallback to direct comparison
-    return station.name === props.prefillDepartureStation.name;
+  // Check if this station matches the prefilled departure station
+  if (props.prefillDepartureStation) {
+    try {
+      // Use our enhanced station matching helper with error handling
+      if (stationMatches(station, props.prefillDepartureStation)) {
+        return true;
+      }
+    } catch (e) {
+      console.error(
+        "Error in isPrefilled, falling back to direct comparison:",
+        e
+      );
+      // Fallback to direct comparison
+      if (station.name === props.prefillDepartureStation.name) {
+        return true;
+      }
+    }
   }
+
+  // Check if this station matches the prefilled arrival station
+  if (props.prefillArrivalStation) {
+    try {
+      // Use our enhanced station matching helper with error handling
+      if (stationMatches(station, props.prefillArrivalStation)) {
+        return true;
+      }
+    } catch (e) {
+      console.error(
+        "Error in isPrefilled, falling back to direct comparison:",
+        e
+      );
+      // Fallback to direct comparison
+      if (station.name === props.prefillArrivalStation.name) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
 
 // Function to handle correspondence stations
@@ -793,24 +1113,68 @@ watch(
   { immediate: true }
 );
 
-// Modified the bus line input handler to update on change
-watch(busLineInput, (newVal) => {
-  if (newVal && newVal.trim() !== "") {
-    updateModelValue();
-  }
-});
+// Helper function to check if a station is prefilled for Q7M-
+const isPrefillArrival = (station) => {
+  if (!props.prefillArrivalStation || !station) return false;
 
-const updateBusLine = () => {
-  // Update the model immediately when bus line changes
-  if (busLineInput.value && busLineInput.value.trim() !== "") {
-    emit("update:modelValue", {
-      mode: selectedMode.value,
-      line: busLineInput.value,
-      departureStation: null,
-      arrivalStation: null,
-    });
-    // Don't set step to 5 - let the parent component handle the next step
+  try {
+    // Use our enhanced station matching helper with error handling
+    return stationMatches(station, props.prefillArrivalStation);
+  } catch (e) {
+    console.error(
+      "Error in isPrefillArrival, falling back to direct comparison:",
+      e
+    );
+    // Fallback to direct comparison
+    return station.name === props.prefillArrivalStation.name;
   }
+};
+
+// Watch for changes to prefillArrivalStation
+watch(
+  () => props.prefillArrivalStation,
+  (newStation) => {
+    if (
+      newStation &&
+      selectedMode.value &&
+      selectedLine.value &&
+      departureStation.value
+    ) {
+      console.log("Prefilled arrival station changed:", newStation.name);
+
+      // Find the matching station in the current line's stations
+      const stationsForLine = selectedLineStations.value;
+      if (!stationsForLine || stationsForLine.length === 0) {
+        console.warn("No stations available for the selected line");
+        return;
+      }
+
+      const matchingStation = stationsForLine.find((station) => {
+        try {
+          return stationMatches(station, newStation);
+        } catch (e) {
+          return station.name === newStation.name;
+        }
+      });
+
+      if (matchingStation) {
+        console.log(`Setting arrival station to: ${matchingStation.name}`);
+        arrivalStation.value = matchingStation;
+
+        // Go directly to the summary view
+        step.value = 5;
+
+        // Update the model
+        updateModelValue();
+      }
+    }
+  }
+);
+
+// This function is here for backwards compatibility but won't auto-advance
+const updateBusLine = () => {
+  // Not used with the input field anymore
+  console.log("updateBusLine called - no automatic step advancement");
 };
 </script>
 
@@ -1100,4 +1464,38 @@ button:disabled {
   font-style: italic;
   margin-left: 5px;
 }
-</style>
+
+.arrival-prefill {
+  background-color: #354770;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  border-left: 4px solid #4a90e2;
+}
+
+.arrival-warning {
+  background-color: #354770;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  border-left: 4px solid #e25555;
+}
+
+.arrival-tag {
+  background-color: #e67e22;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-left: 5px;
+  color: white;
+}
+
+.arrival-banner {
+  background-color: #e67e22;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 0 0 15px 0;
+  text-align: center;
+  font-weight: bold;
+}
+</style> 

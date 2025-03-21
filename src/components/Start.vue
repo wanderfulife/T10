@@ -75,12 +75,18 @@
             <ModeSelector
               v-model="modeSelections[currentQuestion.id]"
               :prefillDepartureStation="getPreviousModeArrivalStation()"
+              :prefillArrivalStation="
+                isQ7MNegative(currentQuestion.id)
+                  ? getPreviousModeDepartureStation()
+                  : null
+              "
             />
             <!-- This summary is shown inside ModeSelector component, so we don't need to duplicate it here -->
             <button
               @click="handleModeSelection"
               class="btn-next"
               :disabled="!isModeSelectorComplete"
+              id="mode-selection-next-btn"
             >
               {{ isLastQuestion ? "Terminer" : "Suivant" }}
             </button>
@@ -298,18 +304,21 @@ const isModeSelectorComplete = computed(() => {
   if (additionalModes.includes(selection.mode)) {
     // For Bus, we need both mode and line
     if (selection.mode === "Bus") {
-      return selection.mode && selection.line;
+      // Make sure we return a boolean
+      return Boolean(
+        selection.mode && selection.line && selection.line.trim() !== ""
+      );
     }
     // For other additional modes, just having the mode is enough
-    return selection.mode ? true : false;
+    return Boolean(selection.mode);
   }
 
   // For standard modes (from stationData), check all fields
-  return (
+  return Boolean(
     selection.mode &&
-    selection.line &&
-    selection.departureStation &&
-    selection.arrivalStation
+      selection.line &&
+      selection.departureStation &&
+      selection.arrivalStation
   );
 });
 
@@ -490,11 +499,19 @@ const handleCommuneSelection = () => {
 };
 
 const handleModeSelection = () => {
+  console.log("handleModeSelection triggered");
+
   if (currentQuestion.value.usesModeSelector) {
     const questionId = currentQuestion.value.id;
+    console.log("Current question ID:", questionId);
     const selection = modeSelections.value[questionId];
 
-    if (!selection || !selection.mode) return;
+    console.log("Current selection:", selection);
+
+    if (!selection || !selection.mode) {
+      console.log("Invalid selection: missing mode");
+      return;
+    }
 
     // List of additional modes
     const additionalModes = [
@@ -510,40 +527,113 @@ const handleModeSelection = () => {
       "2 roues non motorisé (vélo)",
     ];
 
-    // Handle additional modes differently
+    // Handle Q7M- questions
+    if (questionId.match(/^Q7M-(\d+)$/)) {
+      // For Bus mode in Q7M-3, always set stations to empty
+      if (questionId === "Q7M-3" && selection.mode === "Bus") {
+        console.log(
+          "Special case: Bus mode for Q7M-3 - keeping stations empty"
+        );
+        answers.value[`${questionId}_MODE`] = selection.mode;
+        answers.value[`${questionId}_LINE`] = selection.line;
+        // Explicitly set empty station fields
+        answers.value[`${questionId}_DEPARTURE_STATION`] = "";
+        answers.value[`${questionId}_DEPARTURE_STATION_ID`] = "";
+        answers.value[`${questionId}_ARRIVAL_STATION`] = "";
+        answers.value[`${questionId}_ARRIVAL_STATION_ID`] = "";
+
+        console.log(`Fixed: Stored Bus mode for Q7M-3 with empty stations:`, {
+          mode: selection.mode,
+          line: selection.line,
+        });
+
+        nextQuestion();
+        return;
+      }
+      // For Q7M-n questions with standard modes
+      else if (
+        selection.mode &&
+        selection.line &&
+        selection.departureStation &&
+        selection.arrivalStation
+      ) {
+        // Save the answers
+        answers.value[`${questionId}_MODE`] = selection.mode;
+        answers.value[`${questionId}_LINE`] = selection.line;
+        answers.value[`${questionId}_DEPARTURE_STATION`] =
+          selection.departureStation.name;
+        answers.value[`${questionId}_DEPARTURE_STATION_ID`] =
+          selection.departureStation.id;
+        answers.value[`${questionId}_ARRIVAL_STATION`] =
+          selection.arrivalStation.name;
+        answers.value[`${questionId}_ARRIVAL_STATION_ID`] =
+          selection.arrivalStation.id;
+
+        // Log the stored mode selection for debugging
+        console.log(`Stored Q7M- selection for ${questionId}:`, {
+          mode: selection.mode,
+          line: selection.line,
+          departureStation: selection.departureStation.name,
+          arrivalStation: selection.arrivalStation.name,
+        });
+
+        nextQuestion();
+        return;
+      }
+      // For Bus mode for other Q7M- questions
+      else if (selection.mode === "Bus" && selection.line) {
+        answers.value[`${questionId}_MODE`] = selection.mode;
+        answers.value[`${questionId}_LINE`] = selection.line;
+        answers.value[`${questionId}_DEPARTURE_STATION`] = "";
+        answers.value[`${questionId}_DEPARTURE_STATION_ID`] = "";
+        answers.value[`${questionId}_ARRIVAL_STATION`] = "";
+        answers.value[`${questionId}_ARRIVAL_STATION_ID`] = "";
+
+        console.log(`Stored Bus mode for ${questionId} with empty stations:`, {
+          mode: selection.mode,
+          line: selection.line,
+        });
+
+        nextQuestion();
+        return;
+      }
+    }
+
+    // Handle additional modes for normal questions
     if (additionalModes.includes(selection.mode)) {
       // For Bus mode
-      if (selection.mode === "Bus") {
-        if (selection.line) {
-          answers.value[`${questionId}_MODE`] = selection.mode;
-          answers.value[`${questionId}_LINE`] = selection.line;
-          answers.value[`${questionId}_DEPARTURE_STATION`] = "";
-          answers.value[`${questionId}_ARRIVAL_STATION`] = "";
+      if (selection.mode === "Bus" && selection.line) {
+        answers.value[`${questionId}_MODE`] = selection.mode;
+        answers.value[`${questionId}_LINE`] = selection.line;
+        answers.value[`${questionId}_DEPARTURE_STATION`] = "";
+        answers.value[`${questionId}_ARRIVAL_STATION`] = "";
 
-          console.log(`Stored bus selection for ${questionId}:`, {
-            mode: selection.mode,
-            line: selection.line,
-          });
+        console.log(`Stored Bus mode for ${questionId}:`, {
+          mode: selection.mode,
+          line: selection.line,
+        });
 
-          nextQuestion();
-        }
+        nextQuestion();
+        return;
       }
       // For other additional modes
-      else {
+      else if (selection.mode) {
         answers.value[`${questionId}_MODE`] = selection.mode;
         answers.value[`${questionId}_LINE`] = "";
         answers.value[`${questionId}_DEPARTURE_STATION`] = "";
         answers.value[`${questionId}_ARRIVAL_STATION`] = "";
 
-        console.log(`Stored additional mode selection for ${questionId}:`, {
+        console.log(`Stored additional mode for ${questionId}:`, {
           mode: selection.mode,
         });
 
         nextQuestion();
+        return;
       }
     }
+
     // Handle standard modes from stationData
-    else if (
+    if (
       selection.mode &&
       selection.line &&
       selection.departureStation &&
@@ -560,8 +650,7 @@ const handleModeSelection = () => {
       answers.value[`${questionId}_ARRIVAL_STATION_ID`] =
         selection.arrivalStation.id;
 
-      // Log the stored mode selection for debugging
-      console.log(`Stored standard mode selection for ${questionId}:`, {
+      console.log(`Stored standard mode for ${questionId}:`, {
         mode: selection.mode,
         line: selection.line,
         departureStation: selection.departureStation.name,
@@ -569,11 +658,13 @@ const handleModeSelection = () => {
       });
 
       nextQuestion();
+      return;
     }
   }
 };
 
 const nextQuestion = (forcedNextId = null) => {
+  console.log("nextQuestion called with forcedNextId:", forcedNextId);
   let nextQuestionId = forcedNextId;
   if (!nextQuestionId && currentQuestion.value) {
     if (typeof currentQuestion.value.next === "function") {
@@ -582,11 +673,13 @@ const nextQuestion = (forcedNextId = null) => {
       nextQuestionId = currentQuestion.value.next;
     }
   }
+  console.log("Determined nextQuestionId:", nextQuestionId);
 
   if (nextQuestionId === "end") {
     finishSurvey();
   } else if (nextQuestionId) {
     const nextIndex = questions.findIndex((q) => q.id === nextQuestionId);
+    console.log("Next question index:", nextIndex, "for ID:", nextQuestionId);
     if (nextIndex !== -1) {
       // Check if the next question is a conditional question
       const nextQ = questions[nextIndex];
@@ -856,13 +949,14 @@ const getPreviousModeArrivalStation = () => {
       const prevId = `Q7M-${prevNumber}`;
 
       console.log(
-        `Sequential M- question ${currentId}, checking previous question ${prevId}`
+        `Q7M- question ${currentId}, looking for arrival station from ${prevId}`
       );
 
       const prevMode = modeSelections.value[prevId];
+
       if (prevMode && prevMode.arrivalStation) {
         console.log(
-          `CORRESPONDENCE: Using station from ${prevId}: ${prevMode.arrivalStation.name}`
+          `Using arrival station from ${prevId}: ${prevMode.arrivalStation.name}`
         );
         return prevMode.arrivalStation;
       }
@@ -958,6 +1052,43 @@ const getPreviousModeArrivalStation = () => {
   }
 
   return null;
+};
+
+const getPreviousModeDepartureStation = () => {
+  if (!currentQuestion.value || !currentQuestion.value.usesModeSelector) {
+    return null;
+  }
+
+  const currentId = currentQuestion.value.id;
+
+  // Only handle Q7M- questions
+  if (!currentId.match(/^Q7M-(\d+)$/)) {
+    return null;
+  }
+
+  // Get the question number (e.g., 2 from Q7M-2)
+  const questionNumber = parseInt(currentId.match(/^Q7M-(\d+)$/)[1]);
+
+  // For Q7M-n questions, use the previous question's departure station
+  const prevNumber = questionNumber - 1;
+  const prevId = `Q7M-${prevNumber}`;
+  console.log(
+    `Getting departure station from ${prevId} to use as arrival for ${currentId}`
+  );
+
+  const prevMode = modeSelections.value[prevId];
+  if (prevMode?.departureStation) {
+    console.log(
+      `Using ${prevId} departure station (${prevMode.departureStation.name}) as arrival for ${currentId}`
+    );
+    return prevMode.departureStation;
+  }
+
+  return null;
+};
+
+const isQ7MNegative = (questionId) => {
+  return questionId && questionId.match(/^Q7M-[2-9]$/);
 };
 </script>
 
@@ -1071,6 +1202,16 @@ h2 {
   background-color: #2ea44f; /* This is your app's green color */
   width: 100%;
   max-width: 400px;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-next:hover:not(:disabled) {
+  background-color: #34c159;
+  transform: translateY(-2px);
+}
+
+.btn-next:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-next:disabled {
